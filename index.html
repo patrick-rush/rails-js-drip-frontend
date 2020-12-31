@@ -9,7 +9,47 @@
     </head>
     <body>
 
-        <!---->
+      <div>
+        <nav class="bg-gray-800">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+              <div class="flex items-center">
+                <div class="hidden md:block">
+                  <div class="ml-10 flex items-baseline space-x-4">
+                    <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+                    <a href="#" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Plants</a>
+      
+                    <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Rooms</a>
+                    
+                    <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Today</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      
+          <!--
+            Mobile menu, toggle classes based on menu state.
+      
+            Open: "block", closed: "hidden"
+          -->
+          <div class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+              <a href="#" class="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium">Plants</a>
+      
+              <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Rooms</a>
+              
+              <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Today</a>
+            </div>
+          </div>
+        </nav>
+        <main>
+          <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          </div>
+        </main>
+      </div>
+
         <div class="container mx-auto sm:grid grid-cols-3 gap-4 my-4">
             
 <!--
@@ -33,91 +73,89 @@
                 </ul>
             </section>
 -->
-<div id="indexContainer" class="bg-white shadow overflow-hidden sm:rounded-lg">
-    <div class="px-4 py-5 sm:px-6">
-      <h3 class="text-lg leading-6 font-medium text-gray-900"></h3>
-        Plants
-      </h3>
-    </div>
-    <div class="border-t border-gray-200">
-      <ul>
-        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <li class="text-sm font-medium text-gray-500">
-            Full name
-          </li>
-          <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            Margot Foster
-          </li>
-        </div>
-        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <li class="text-sm font-medium text-gray-500">
-            Application for
-          </li>
-          <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            Backend Developer
-          </li>
-        </div>
-      </ul>
-    </div>
-  </div>
-            
-            <div id="infoContainer" class="bg-white sm:min-h-screen col-span-2 rounded-md shadow">
-                <div class="px-4 py-5 sm:px-6">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Name of Plant
-                  </h3>
-                  <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                    Species of plant
-                  </p>
+          <div id="indexContainer" class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+              <h3 class="text-lg leading-6 font-medium text-gray-900"></h3>
+                Plants
+              </h3>
+            </div>
+            <div class="border-t border-gray-200">
+              <ul>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Plant 1
+                  </li>
                 </div>
-                <div class="border-t border-gray-200">
-                  <ul>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <li class="text-sm font-medium text-gray-500">
-                        Location
-                      </li>
-                      <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <a href="#" class="py-4 col-span-10 sm:col-span-4">Kitchen</a>
-                        <a href="#" class="my-4 text-right"><i class="fa fa-pencil-alt"></i></a>      
-                      </li>
-                      
-                    </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <li class="text-sm font-medium text-gray-500">
-                        Watering Frequency
-                      </li>
-                      <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <a href="#" class="py-4 col-span-10 sm:col-span-4">5 days</a>
-                        <a href="#" class="my-4 text-right"><i class="fa fa-minus"></i></a>
-                        <a href="#" class="my-4 text-right"><i class="fa fa-plus"></i></a>      
-
-                      </li>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                      <li class="text-sm font-medium text-gray-500">
-                        Fertalizating Frequency
-                      </li>
-                      <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        <a href="#" class="py-4 col-span-10 sm:col-span-4">6 months</a>
-                        <a href="#" class="my-4 text-right"><i class="fa fa-minus"></i></a>
-                        <a href="#" class="my-4 text-right"><i class="fa fa-plus"></i></a>      
-
-                      </li>
-                    </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <li class="text-sm font-medium text-gray-500">
-                          Notes
-                        </li>
-                    </div>  
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <li class="text-sm font-medium text-gray-500">
-                          Completed Care Events
-                        </li>
-                    </div>
-  
-                  </ul>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Plant 2
+                  </li>
                 </div>
-              </div>
+              </ul>
+            </div>
+          </div>
+          
+          <div id="infoContainer" class="bg-white sm:min-h-screen col-span-2 rounded-md shadow">
+            <div class="px-4 py-5 sm:px-6">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">
+                Name of Plant
+              </h3>
+              <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                Species of plant
+              </p>
+            </div>
+            <div class="border-t border-gray-200">
+              <ul>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Location
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="py-4 col-span-10 sm:col-span-4">Kitchen</a>
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="my-4 text-right"><i class="fa fa-pencil-alt content-end"></i></a>      
+                  </li>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Watering Frequency
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="py-4 col-span-10 sm:col-span-4">5 days</a>
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="my-4 text-right"><i class="fa fa-minus"></i></a>
+                    <a href="#" class="my-4 text-right"><i class="fa fa-plus"></i></a>      
+                  </li>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Fertalizating Frequency
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="py-4 col-span-10 sm:col-span-4">6 months</a>
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="my-4 text-right"><i class="fa fa-minus"></i></a>
+                    <a href="#" class="my-4 text-right"><i class="fa fa-plus"></i></a>      
+                  </li>
+
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Notes
+                  </li>
+                </div>  
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Completed Care Events
+                  </li>
+                </div>
+
+              </ul>
+            </div>
+          </div>
 
 <!--
             <section id="tasksContainer" class="px-4 bg-blue-100 sm:min-h-screen col-span-2 rounded-md shadow">
