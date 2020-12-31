@@ -1,40 +1,133 @@
 <!DOCTYPE html>
-<html land="en">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Drip</title>
         <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
-
     </head>
     <body>
+
+        <!---->
         <div class="container mx-auto sm:grid grid-cols-3 gap-4 my-4">
-            <section id="todoListsContainer" class="px-4 bg-blue-100 sm:min-h-screen rounded-md shadow">
-              <h1 class="text-2xl semibold">Todo Lists</h1>
+            
+<!--
+            <section id="sidebarContainer" class="px-4 bg-blue-100 sm:min-h-screen rounded-md shadow">
+              <h1 class="text-2xl semibold">Plants</h1>
               <form id="newTodoList" class="flex mt-4">
                 <input type="text" class="flex-1 p-3" placeholder="New List" />
                 <button type="submit" class="flex-none"><i class="fa fa-plus p-4 z--1 bg-green-400"></i></button>
               </form>
               <ul id="lists" class="list-none">
-                <li class="my-2 px-4 bg-green-200 grid grid-cols-12 sm:grid-cols-6">
-                  <a href="#" class="py-4 col-span-10 sm:col-span-4">My List</a>
-                  <a href="#" class="my-4 text-right"><i class="fa fa-pencil-alt"></i></a>
-                  <a href="#" class="my-4 text-right"><i class="fa fa-trash-alt"></i></a>
-                </li>
-                <li class="my-2 px-4 bg-green-200 grid grid-cols-12 sm:grid-cols-6">
-                  <a href="#" class="py-4 col-span-10 sm:col-span-4">My Next List</a>
-                  <a href="#" class="my-4 text-right"><i class="fa fa-pencil-alt"></i></a>
-                  <a href="#" class="my-4 text-right"><i class="fa fa-trash-alt"></i></a>
-                </li>
-              </ul>
+                  <li class="my-2 px-4 bg-green-200 grid grid-cols-12 sm:grid-cols-6">
+                      <a href="#" class="py-4 col-span-10 sm:col-span-4">Plant 1</a>
+                      <a href="#" class="my-4 text-right"><i class="fa fa-pencil-alt"></i></a>
+                      <a href="#" class="my-4 text-right"><i class="fa fa-trash-alt"></i></a>
+                    </li>
+                    <li class="my-2 px-4 bg-green-200 grid grid-cols-12 sm:grid-cols-6">
+                        <a href="#" class="py-4 col-span-10 sm:col-span-4">Plant 2</a>
+                        <a href="#" class="my-4 text-right"><i class="fa fa-pencil-alt"></i></a>
+                        <a href="#" class="my-4 text-right"><i class="fa fa-trash-alt"></i></a>
+                    </li>
+                </ul>
             </section>
+-->
+<div id="indexContainer" class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900"></h3>
+        Plants
+      </h3>
+    </div>
+    <div class="border-t border-gray-200">
+      <ul>
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <li class="text-sm font-medium text-gray-500">
+            Full name
+          </li>
+          <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            Margot Foster
+          </li>
+        </div>
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <li class="text-sm font-medium text-gray-500">
+            Application for
+          </li>
+          <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            Backend Developer
+          </li>
+        </div>
+      </ul>
+    </div>
+  </div>
+            
+            <div id="infoContainer" class="bg-white sm:min-h-screen col-span-2 rounded-md shadow">
+                <div class="px-4 py-5 sm:px-6">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Name of Plant
+                  </h3>
+                  <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    Species of plant
+                  </p>
+                </div>
+                <div class="border-t border-gray-200">
+                  <ul>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                      <li class="text-sm font-medium text-gray-500">
+                        Location
+                      </li>
+                      <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <a href="#" class="py-4 col-span-10 sm:col-span-4">Kitchen</a>
+                        <a href="#" class="my-4 text-right"><i class="fa fa-pencil-alt"></i></a>      
+                      </li>
+                      
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                      <li class="text-sm font-medium text-gray-500">
+                        Watering Frequency
+                      </li>
+                      <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <a href="#" class="py-4 col-span-10 sm:col-span-4">5 days</a>
+                        <a href="#" class="my-4 text-right"><i class="fa fa-minus"></i></a>
+                        <a href="#" class="my-4 text-right"><i class="fa fa-plus"></i></a>      
+
+                      </li>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                      <li class="text-sm font-medium text-gray-500">
+                        Fertalizating Frequency
+                      </li>
+                      <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <a href="#" class="py-4 col-span-10 sm:col-span-4">6 months</a>
+                        <a href="#" class="my-4 text-right"><i class="fa fa-minus"></i></a>
+                        <a href="#" class="my-4 text-right"><i class="fa fa-plus"></i></a>      
+
+                      </li>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <li class="text-sm font-medium text-gray-500">
+                          Notes
+                        </li>
+                    </div>  
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <li class="text-sm font-medium text-gray-500">
+                          Completed Care Events
+                        </li>
+                    </div>
+  
+                  </ul>
+                </div>
+              </div>
+
+<!--
             <section id="tasksContainer" class="px-4 bg-blue-100 sm:min-h-screen col-span-2 rounded-md shadow">
-              <h1 class="text-2xl semibold">Tasks</h1>
+              <h1 class="text-2xl semibold">Plant 1</h1>
+
               <form id="newTask" class="flex mt-4">
                 <input type="text" class="block flex-1 p-3" placeholder="New Task" />
                 <button type="submit" class="block flex-none"><i class="fa fa-plus p-4 z--1 bg-green-400"></i></button>
               </form>
+
               <ul id="tasks" class="list-none">
                 <li class="my-2 px-4 bg-green-200 grid grid-cols-12">
                   <a href="#" class="py-4 col-span-10">My First Task</a>
@@ -43,6 +136,7 @@
                 </li>
               </ul>
             </section>
+-->
           </div>
         <script src="js/listeners.js"></script>
         <script src="js/models.js"></script>
