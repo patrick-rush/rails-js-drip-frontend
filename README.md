@@ -1,0 +1,1 @@
+# rails-js-drip-frontend
