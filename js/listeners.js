@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
 document.addEventListener('click', function(e) {
     let target = e.target;
     if (target.matches('.showPlants')) {
-        Plant.all();
+        Plant.collection || Plant.all();
     } else if (target.matches('.showNewPlant')) {
         Plant.new();
     } 

@@ -4,11 +4,11 @@ class Plant {
         whitelist.forEach(attr => this[attr] = attributes[attr]);
     }
 
-    static infoContainer() {
-        return this.c ||= document.querySelector("#infoContainer");
+    static rightContainer() {
+        return this.c ||= document.querySelector("#rightContainer");
     }
 
-    static list() {
+    static leftContainer() {
         return this.l ||= document.querySelector("#plants");
     }
 
@@ -30,7 +30,7 @@ class Plant {
             .then(plantArray => {
                 this.collection = plantArray.map(attrs => new Plant(attrs));
                 let renderedPlants = this.collection.map(plant => plant.render());
-                this.list().append(...renderedPlants);
+                this.leftContainer().append(...renderedPlants);
                 return this.collection
             })
     }
@@ -44,7 +44,7 @@ class Plant {
 */ 
 
 /*
-            <div id="infoContainerHeader" class="px-4 py-5 sm:px-6">
+            <div id="rightContainerHeader" class="px-4 py-5 sm:px-6">
               <h3 class="text-lg leading-6 font-medium text-gray-900">
                 Name of Plant
               </h3>
@@ -53,7 +53,7 @@ class Plant {
               </p>
             </div>
 
-            Plant.infoContainer().querySelector(".")
+            Plant.rightContainer().querySelector(".")
 */
 /*
               <form action="#" method="POST">
@@ -93,12 +93,12 @@ class Plant {
 */
     static new() {
         console.log("got to new plant");
-        let header = this.infoContainer().querySelector(".header");
+        let header = this.rightContainer().querySelector(".header");
         let title = header.querySelector(".title");
-        let body = this.infoContainer().querySelector(".body");
+        let body = this.rightContainer().querySelector(".body");
         title.innerText = "Create a New Plant";
 
-        let plantForm = this.infoContainer().querySelector("#newPlant");
+        let plantForm = this.rightContainer().querySelector("#newPlant");
         body.classList.add("hidden");
         plantForm.classList.remove("hidden");        
     }
@@ -123,15 +123,96 @@ class Plant {
             .then(plantAttributes => {
                 let plant = new Plant(plantAttributes);
                 this.collection.push(plant);
-                this.infoContainer().appendChild(plant.renderPlant());
+                this.rightContainer().querySelector(".body").classList.remove("hidden");
+                this.rightContainer().querySelector("#newPlant").classList.add("hidden");
+                this.rightContainer().querySelector(".title").textContent = plant.name;
+                this.rightContainer().querySelector(".location").textContent = plant.location;
+                this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
+                this.leftContainer().append(plant.render())
+                // this.rightContainer().querySelector(".fertilizing_frequency").textContent = plant.fertilizing_frequency;
+                // this.rightContainer().appendChild(plant.renderPlant());
             })
     }
 
+/*
+          <div id="rightContainer" class="bg-white sm:min-h-screen col-span-2 rounded-md shadow">
+            <div class="header px-4 py-5 sm:px-6">
+              <h3 class="title text-lg leading-6 font-medium text-gray-900">
+                Name of Plant
+              </h3>
+            </div>
+            <div class="border-t border-gray-200">
+              <div class="body">
+              <ul>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Location
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="py-4 col-span-10 sm:col-span-4">Kitchen</a>
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="my-4 text-right"><i class="fa fa-pencil-alt content-end"></i></a>      
+                  </li>
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Watering Frequency
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="py-4 col-span-10 sm:col-span-4">5 days</a>
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="my-4 text-right"><i class="fa fa-minus"></i></a>
+                    <a href="#" class="my-4 text-right"><i class="fa fa-plus"></i></a>      
+                  </li>
+                </div>
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Fertalizating Frequency
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="py-4 col-span-10 sm:col-span-4">6 months</a>
+                  </li>
+                  <li class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-1">
+                    <a href="#" class="my-4 text-right"><i class="fa fa-minus"></i></a>
+                    <a href="#" class="my-4 text-right"><i class="fa fa-plus"></i></a>      
+                  </li>
+
+                </div>
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Notes
+                  </li>
+                </div>  
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <li class="text-sm font-medium text-gray-500">
+                    Completed Care Events
+                  </li>
+                </div>
+
+              </ul>
+            </div>
+
+*/
+
     renderPlant() {
         // START HERE - MAKE THIS RENDER A PLANT'S INFO AND ALSO TOGGLE HIDDEN ON FORM 
-        this.element ||= document.createElement('div');
-        this.element.innerText = this
-        return this.element
+        // this.element ||= document.createElement('div');
+        
+        // this.header ||= document.createElement('div');
+        // this.header.classList.add(..."header px-4 py-5 sm:px-6".split(" "));
+        
+        // this.h ||= document.createElement('h3');
+        // this.h.classList.add(..."title text-lg leading-6 font-medium text-gray-900".split(" "));
+        // this.h.innerText = this.name;
+        
+        // this.header.append(this.h);
+
+        // this.element.append(this.header);
+        
+        document.querySelector("#rightContainer").querySelector(".title").textContent = this.name;
+        return this.element;
     }
 
     render() {
