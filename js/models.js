@@ -34,6 +34,11 @@ class Plant {
             })
     }
 
+    static show(targetId) {
+        let plant = this.collection.find(plant => plant["id"] == targetId);
+        plant.renderPlant()
+    }
+
     static new() {
         console.log("got to new plant");
         let header = this.rightContainer().querySelector(".header");
@@ -60,7 +65,7 @@ class Plant {
                 if(res.ok) {
                     return res.json();
                 } else {
-                    return res.text().then(error => Promise.reject(error))
+                    return res.text().then(error => Promise.reject(error));
                 }
             })
             .then(plantAttributes => {
@@ -79,23 +84,92 @@ class Plant {
             })
     }
 
+    static increaseDays(id) {
+        let plant = this.collection.find(plant => plant["id"] == id);
+        let days = plant.watering_frequency.split(" ")[0]
+        let newWateringFrequency = parseInt(days) + 1 + " days";
+        plant.watering_frequency = newWateringFrequency;
+        // this = Plant above
+        return fetch(`http://localhost:3000/plants/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({plant: {watering_frequency: newWateringFrequency}})
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(plant => {
+                console.log(plant)
+                this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
+                
+            })
+            .catch(error => {
+                new FlashMessage({type: 'error', message: error});
+            })
+    }
+    // above and below can be refactored into one method
+    static decreaseDays(id) {
+        let plant = this.collection.find(plant => plant["id"] == id);
+        console.log(plant)
+        let days = plant.watering_frequency.split(" ")[0]
+        let newWateringFrequency = parseInt(days) - 1 + " days";
+        plant.watering_frequency = newWateringFrequency;
+        // this = Plant above
+        return fetch(`http://localhost:3000/plants/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({plant: {watering_frequency: newWateringFrequency}})
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(plant => {
+                console.log(plant)
+                this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
+                
+            })
+            .catch(error => {
+                new FlashMessage({type: 'error', message: error});
+            })
+    }
+
+    static edit() {
+
+    }
+
+    static update() {
+
+    }
+
+    static destroy() {
+
+    }
+
 
     renderPlant() {
-        // START HERE - MAKE THIS RENDER A PLANT'S INFO AND ALSO TOGGLE HIDDEN ON FORM 
-        // this.element ||= document.createElement('div');
-        
-        // this.header ||= document.createElement('div');
-        // this.header.classList.add(..."header px-4 py-5 sm:px-6".split(" "));
-        
-        // this.h ||= document.createElement('h3');
-        // this.h.classList.add(..."title text-lg leading-6 font-medium text-gray-900".split(" "));
-        // this.h.innerText = this.name;
-        
-        // this.header.append(this.h);
+        Plant.rightContainer().querySelector(".body").classList.remove("hidden");
+        Plant.rightContainer().querySelector("#newPlant").classList.add("hidden");
 
-        // this.element.append(this.header);
-        
-        document.querySelector("#rightContainer").querySelector(".title").textContent = this.name;
+        Plant.rightContainer().querySelector(".increaseDays").dataset.plantId = this.id;
+        Plant.rightContainer().querySelector(".decreaseDays").dataset.plantId = this.id;
+        Plant.rightContainer().querySelector(".title").textContent = this.name;
+        Plant.rightContainer().querySelector(".location").textContent = this.location;
+        Plant.rightContainer().querySelector(".watering_frequency").textContent = this.watering_frequency;
+        // Will need to render notes and care events here as well
         return this.element;
     }
 
@@ -105,8 +179,9 @@ class Plant {
 
         this.nameLink ||= document.createElement('a');
         this.nameLink.href = "#"
-        this.nameLink.classList.add(..."text-sm font-medium text-gray-500".split(" "));
+        this.nameLink.classList.add(..."text-sm font-medium text-gray-500 selectPlant".split(" "));
         this.nameLink.textContent = this.name;
+        this.nameLink.dataset.plantId = this.id;
 
         this.element.append(this.nameLink);
 

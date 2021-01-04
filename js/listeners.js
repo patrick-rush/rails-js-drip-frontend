@@ -8,7 +8,16 @@ document.addEventListener('click', function(e) {
         Plant.collection || Plant.all();
     } else if (target.matches('.showNewPlant')) {
         Plant.new();
-    } 
+    } else if (target.matches('.selectPlant')) {
+        console.log('selected plant:', target.dataset.plantId);
+        Plant.show(target.dataset.plantId);
+    } else if (target.matches('.increaseDays')) {
+        console.log('clicked plus', target.dataset.plantId);
+        Plant.increaseDays(target.dataset.plantId);
+    } else if (target.matches('.decreaseDays')) {
+        console.log('clicked minus', target.dataset.plantId);
+        Plant.decreaseDays(target.dataset.plantId);
+    }
 })
 
 document.addEventListener('submit', function(e) {
