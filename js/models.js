@@ -76,8 +76,9 @@ class Plant {
                 this.rightContainer().querySelector(".title").textContent = plant.name;
                 this.rightContainer().querySelector(".location").textContent = plant.location;
                 this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
-                this.leftContainer().append(plant.render())
-                new FlashMessage({type: 'success', message: 'New plant added successfully'})
+                this.leftContainer().append(plant.render());
+                CareEvent.create({plant_id: plant.id, event_type: "water", due_date: new Date().toLocaleDateString()})
+                new FlashMessage({type: 'success', message: 'New plant added successfully'});
             })
             .catch(error => {
                 new FlashMessage({type: 'error', message: error});
@@ -86,7 +87,7 @@ class Plant {
 
     static increaseDays(id) {
         let plant = this.collection.find(plant => plant["id"] == id);
-        let days = plant.watering_frequency.split(" ")[0]
+        let days = plant.watering_frequency.split(" ")[0];
         let newWateringFrequency = parseInt(days) + 1 + " days";
         plant.watering_frequency = newWateringFrequency;
         // this = Plant above
@@ -194,6 +195,63 @@ class CareEvent {
         let whitelist = ["id", "event_type", "due_date", "completed", "plant_id"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
     }
+/*
+    console.log(formData);
+    return fetch("http://localhost:3000/plants", {
+        method: "POST",
+        headers: {
+            "Accept" : "application/json",
+            "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({plant: formData})
+    })
+        .then(res => {
+            if(res.ok) {
+                return res.json();
+            } else {
+                return res.text().then(error => Promise.reject(error));
+            }
+        })
+        .then(plantAttributes => {
+            let plant = new Plant(plantAttributes);
+            this.collection.push(plant);
+            this.rightContainer().querySelector(".body").classList.remove("hidden");
+            this.rightContainer().querySelector("#newPlant").classList.add("hidden");
+            this.rightContainer().querySelector(".title").textContent = plant.name;
+            this.rightContainer().querySelector(".location").textContent = plant.location;
+            this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
+            this.leftContainer().append(plant.render());
+            CareEvent.create({plant_id: plant.id, event_type: "water", due_date: new Date().toLocaleDateString()})
+            new FlashMessage({type: 'success', message: 'New plant added successfully'});
+        })
+        .catch(error => {
+            new FlashMessage({type: 'error', message: error});
+        })
+
+*/
+    static create(attrs) {
+        return fetch("http://localhost:3000/care_events", {
+            method: 'POST',
+            headers: {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"    
+            },
+            body: JSON.stringify({care_event: attrs})
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(careEventAttributes => {
+                this.collection ||= [];
+                let careEvent = new CareEvent(careEventAttributes);
+                this.collection.push(careEvent);
+            })
+    }
+
 }
 
 class FlashMessage {
