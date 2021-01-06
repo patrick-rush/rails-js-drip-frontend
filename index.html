@@ -10,18 +10,18 @@
     <body>
 
       <div>
-        <nav class="bg-gray-800">
+        <nav id="nav" class="bg-gray-800">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
               <div class="flex items-center">
                 <div class="hidden md:block">
                   <div class="ml-10 flex items-baseline space-x-4">
                     <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-                    <a href="#" class="showPlants bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Plants</a>
+                    <a href="#" class="showPlants hover:bg-gray-700 hover:text-white bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Plants</a>
       
                     <!-- <a href="#" class="showRooms text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Rooms</a> -->
                     
-                    <a href="#" class="showToday text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Today</a>
+                    <a href="#" class="showToday hover:bg-gray-700 hover:text-white text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Today</a>
                     
                     <a href="#" class="showNewPlant text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">New Plant</a>
                   </div>
@@ -79,15 +79,13 @@
 -->
           <div id="leftContainer" class="bg-white shadow overflow-hidden sm:rounded-lg">
             <div class="px-4 py-5 sm:px-6">
-              <h3 class="text-lg leading-6 font-medium text-gray-900">
+              <h3 class="header text-lg leading-6 font-medium text-gray-900">
                 Plants
               </h3>
             </div>
-            <div id="plantsContainer" class="border-t border-gray-200">
-              <ul id="leftContainer">
-                <!-- Plants show up here -->
-              </ul>
+            <div class="border-t border-gray-200">
             </div>
+            <div class="body"></div>
           </div>
           
           <div id="rightContainer" class="bg-white sm:min-h-screen col-span-2 rounded-md shadow">

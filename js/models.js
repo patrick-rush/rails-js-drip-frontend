@@ -6,6 +6,10 @@ class Page {
     static rightContainer() {
         return this.c ||= document.querySelector("#rightContainer");
     }
+
+    static nav() {
+        return this.n ||= document.querySelector("#nav");
+    }
 }
 
 class Plant {
@@ -29,9 +33,11 @@ class Plant {
                 }
             })
             .then(plantArray => {
-                this.collection = plantArray.map(attrs => new Plant(attrs));
+                this.collection ||= plantArray.map(attrs => new Plant(attrs));
                 let renderedPlants = this.collection.map(plant => plant.render());
-                Page.leftContainer().append(...renderedPlants);
+                Page.leftContainer().querySelector(".body").innerHTML = "";
+                Page.leftContainer().querySelector(".header").innerText = "Plants";
+                Page.leftContainer().querySelector(".body").append(...renderedPlants);
                 return this.collection
             })
     }
@@ -199,66 +205,8 @@ class CareEvent {
         whitelist.forEach(attr => this[attr] = attributes[attr]);
     }
 
-/*
-        return fetch("http://localhost:3000/plants", {
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            }
-        })
-            .then(res => {
-                if(res.ok) {
-                return res.json()
-                } else {
-                return res.text().then(error => Promise.reject(error));
-                }
-            })
-            .then(plantArray => {
-                this.collection = plantArray.map(attrs => new Plant(attrs));
-                let renderedPlants = this.collection.map(plant => plant.render());
-                Page.leftContainer().append(...renderedPlants);
-                return this.collection
-            })
-*/
-
-    static rightContainer() {
-        return this.c ||= document.querySelector("#rightContainer");
-    }
-
-    static leftContainer() {
-        return this.l ||= document.querySelector("#plants");
-    }
-
     static today() {
-        console.log("got to today method");
-        return fetch("http://localhost:3000/care_events", {
-            headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            }
-        })
-            .then(res => {
-                if(res.ok) {
-                    return res.json()
-                } else {
-                    return res.text().then(error => Promise.reject(error));
-                }
-            })
-            .then(careEventArray => {
-                this.collection = careEventArray.map(attrs => {
-                    if (attrs.due_date == new Date().toISOString().slice(0, 10)) {
-                        return new CareEvent(attrs);
-                    }
-                })
-                let renderedCareEvents = this.collection.map(careEvent => careEvent.render());
-                Page.leftContainer().innerHTML = "";
-                Page.leftContainer().append(...renderedCareEvents);
-                return this.collection;
-            })
-    }
-
-    static all() {
-        return fetch("http://localhost:3000/care_events", {
+        return fetch("http://localhost:3000/care_events/today", {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
@@ -273,10 +221,11 @@ class CareEvent {
             })
             .then(careEventArray => {
                 // debugger
-                this.collection = careEventArray.map(attrs => new CareEvent(attrs));
+                this.collection ||= careEventArray.map(attrs => new CareEvent(attrs));
                 let renderedCareEvents = this.collection.map(careEvent => careEvent.render());
-                Page.leftContainer().innerHTML = "";
-                Page.leftContainer().append(...renderedCareEvents);
+                Page.leftContainer().querySelector(".body").innerHTML = "";
+                Page.leftContainer().querySelector(".header").innerText = "Today's Care Events";
+                Page.leftContainer().querySelector(".body").append(...renderedCareEvents);
                 return this.collection;
             })
     }
@@ -299,15 +248,6 @@ class CareEvent {
 
     plantName() {
         return Plant.collection.find(plant => plant["id"] == this.plant_id).name;
-    }
-
-    // humanDate() {
-    //     let date = this.due_date;
-
-    // }
-
-    static today() {
-
     }
 
     static new() {
