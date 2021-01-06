@@ -17,6 +17,9 @@ document.addEventListener('click', function(e) {
     } else if (target.matches('.decreaseDays')) {
         console.log('clicked minus', target.dataset.plantId);
         Plant.decreaseDays(target.dataset.plantId);
+    } else if (target.matches('.showToday')) {
+        console.log('clicked Today button');
+        CareEvent.all();
     }
 })
 

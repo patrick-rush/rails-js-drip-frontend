@@ -1,15 +1,17 @@
-class Plant {
-    constructor(attributes) {
-        let whitelist = ["id", "name", "species", "location", "watering_frequency", "fertalizating_frequency", "user_id"];
-        whitelist.forEach(attr => this[attr] = attributes[attr]);
+class Page {
+    static leftContainer() {
+        return this.l ||= document.querySelector("#leftContainer");
     }
 
     static rightContainer() {
         return this.c ||= document.querySelector("#rightContainer");
     }
+}
 
-    static leftContainer() {
-        return this.l ||= document.querySelector("#plants");
+class Plant {
+    constructor(attributes) {
+        let whitelist = ["id", "name", "species", "location", "watering_frequency", "fertalizating_frequency", "user_id"];
+        whitelist.forEach(attr => this[attr] = attributes[attr]);
     }
 
     static all() {
@@ -29,7 +31,7 @@ class Plant {
             .then(plantArray => {
                 this.collection = plantArray.map(attrs => new Plant(attrs));
                 let renderedPlants = this.collection.map(plant => plant.render());
-                this.leftContainer().append(...renderedPlants);
+                Page.leftContainer().append(...renderedPlants);
                 return this.collection
             })
     }
@@ -41,12 +43,12 @@ class Plant {
 
     static new() {
         console.log("got to new plant");
-        let header = this.rightContainer().querySelector(".header");
+        let header = Page.rightContainer().querySelector(".header");
         let title = header.querySelector(".title");
-        let body = this.rightContainer().querySelector(".body");
+        let body = Page.rightContainer().querySelector(".body");
         title.innerText = "Create a New Plant";
 
-        let plantForm = this.rightContainer().querySelector("#newPlant");
+        let plantForm = Page.rightContainer().querySelector("#newPlant");
         body.classList.add("hidden");
         plantForm.classList.remove("hidden");        
     }
@@ -71,12 +73,12 @@ class Plant {
             .then(plantAttributes => {
                 let plant = new Plant(plantAttributes);
                 this.collection.push(plant);
-                this.rightContainer().querySelector(".body").classList.remove("hidden");
-                this.rightContainer().querySelector("#newPlant").classList.add("hidden");
-                this.rightContainer().querySelector(".title").textContent = plant.name;
-                this.rightContainer().querySelector(".location").textContent = plant.location;
-                this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
-                this.leftContainer().append(plant.render());
+                Page.rightContainer().querySelector(".body").classList.remove("hidden");
+                Page.rightContainer().querySelector("#newPlant").classList.add("hidden");
+                Page.rightContainer().querySelector(".title").textContent = plant.name;
+                Page.rightContainer().querySelector(".location").textContent = plant.location;
+                Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
+                Page.leftContainer().append(plant.render());
                 CareEvent.create({plant_id: plant.id, event_type: "water", due_date: new Date().toLocaleDateString()})
                 new FlashMessage({type: 'success', message: 'New plant added successfully'});
             })
@@ -108,7 +110,7 @@ class Plant {
             })
             .then(plant => {
                 console.log(plant)
-                this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
+                Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
                 
             })
             .catch(error => {
@@ -140,7 +142,7 @@ class Plant {
             })
             .then(plant => {
                 console.log(plant)
-                this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
+                Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
                 
             })
             .catch(error => {
@@ -162,14 +164,14 @@ class Plant {
 
 
     renderPlant() {
-        Plant.rightContainer().querySelector(".body").classList.remove("hidden");
-        Plant.rightContainer().querySelector("#newPlant").classList.add("hidden");
+        Page.rightContainer().querySelector(".body").classList.remove("hidden");
+        Page.rightContainer().querySelector("#newPlant").classList.add("hidden");
 
-        Plant.rightContainer().querySelector(".increaseDays").dataset.plantId = this.id;
-        Plant.rightContainer().querySelector(".decreaseDays").dataset.plantId = this.id;
-        Plant.rightContainer().querySelector(".title").textContent = this.name;
-        Plant.rightContainer().querySelector(".location").textContent = this.location;
-        Plant.rightContainer().querySelector(".watering_frequency").textContent = this.watering_frequency;
+        Page.rightContainer().querySelector(".increaseDays").dataset.plantId = this.id;
+        Page.rightContainer().querySelector(".decreaseDays").dataset.plantId = this.id;
+        Page.rightContainer().querySelector(".title").textContent = this.name;
+        Page.rightContainer().querySelector(".location").textContent = this.location;
+        Page.rightContainer().querySelector(".watering_frequency").textContent = this.watering_frequency;
         // Will need to render notes and care events here as well
         return this.element;
     }
@@ -190,45 +192,128 @@ class Plant {
     }
 }
 
+
 class CareEvent {
     constructor(attributes) {
         let whitelist = ["id", "event_type", "due_date", "completed", "plant_id"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
     }
+
 /*
-    console.log(formData);
-    return fetch("http://localhost:3000/plants", {
-        method: "POST",
-        headers: {
-            "Accept" : "application/json",
-            "Content-Type" : "application/json"
-        },
-        body: JSON.stringify({plant: formData})
-    })
-        .then(res => {
-            if(res.ok) {
-                return res.json();
-            } else {
-                return res.text().then(error => Promise.reject(error));
+        return fetch("http://localhost:3000/plants", {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
             }
         })
-        .then(plantAttributes => {
-            let plant = new Plant(plantAttributes);
-            this.collection.push(plant);
-            this.rightContainer().querySelector(".body").classList.remove("hidden");
-            this.rightContainer().querySelector("#newPlant").classList.add("hidden");
-            this.rightContainer().querySelector(".title").textContent = plant.name;
-            this.rightContainer().querySelector(".location").textContent = plant.location;
-            this.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
-            this.leftContainer().append(plant.render());
-            CareEvent.create({plant_id: plant.id, event_type: "water", due_date: new Date().toLocaleDateString()})
-            new FlashMessage({type: 'success', message: 'New plant added successfully'});
-        })
-        .catch(error => {
-            new FlashMessage({type: 'error', message: error});
-        })
-
+            .then(res => {
+                if(res.ok) {
+                return res.json()
+                } else {
+                return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(plantArray => {
+                this.collection = plantArray.map(attrs => new Plant(attrs));
+                let renderedPlants = this.collection.map(plant => plant.render());
+                Page.leftContainer().append(...renderedPlants);
+                return this.collection
+            })
 */
+
+    static rightContainer() {
+        return this.c ||= document.querySelector("#rightContainer");
+    }
+
+    static leftContainer() {
+        return this.l ||= document.querySelector("#plants");
+    }
+
+    static today() {
+        console.log("got to today method");
+        return fetch("http://localhost:3000/care_events", {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json()
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(careEventArray => {
+                this.collection = careEventArray.map(attrs => {
+                    if (attrs.due_date == new Date().toISOString().slice(0, 10)) {
+                        return new CareEvent(attrs);
+                    }
+                })
+                let renderedCareEvents = this.collection.map(careEvent => careEvent.render());
+                Page.leftContainer().innerHTML = "";
+                Page.leftContainer().append(...renderedCareEvents);
+                return this.collection;
+            })
+    }
+
+    static all() {
+        return fetch("http://localhost:3000/care_events", {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json()
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(careEventArray => {
+                // debugger
+                this.collection = careEventArray.map(attrs => new CareEvent(attrs));
+                let renderedCareEvents = this.collection.map(careEvent => careEvent.render());
+                Page.leftContainer().innerHTML = "";
+                Page.leftContainer().append(...renderedCareEvents);
+                return this.collection;
+            })
+    }
+
+    render() { 
+        // debugger
+        this.element ||= document.createElement('div');
+        this.element.classList.add(..."bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6".split(" "));
+
+        this.eventNameLink ||= document.createElement('a');
+        this.eventNameLink.href = "#"
+        this.eventNameLink.classList.add(..."text-sm font-medium text-gray-500 selectEvent".split(" "));
+        this.eventNameLink.textContent = `${this.event_type} ${this.plantName()}`;
+        this.eventNameLink.dataset.careEventId = this.id;
+
+        this.element.append(this.eventNameLink);
+
+        return this.element;
+    }
+
+    plantName() {
+        return Plant.collection.find(plant => plant["id"] == this.plant_id).name;
+    }
+
+    // humanDate() {
+    //     let date = this.due_date;
+
+    // }
+
+    static today() {
+
+    }
+
+    static new() {
+
+    }
+
     static create(attrs) {
         return fetch("http://localhost:3000/care_events", {
             method: 'POST',
@@ -250,6 +335,18 @@ class CareEvent {
                 let careEvent = new CareEvent(careEventAttributes);
                 this.collection.push(careEvent);
             })
+    }
+
+    static edit() {
+
+    }
+
+    static update() {
+
+    }
+
+    static destroy() {
+
     }
 
 }
@@ -277,3 +374,12 @@ class FlashMessage {
         this.container().classList.toggle(this.error ? 'bg-red-200' : 'bg-gray-200');
     }
 }
+
+// look up moment js
+// handle care events today of server side 
+
+// plant search for live coding
+
+// you need precision  
+
+// you to me course
