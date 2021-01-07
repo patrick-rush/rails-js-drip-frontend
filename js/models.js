@@ -10,6 +10,19 @@ class Page {
     static nav() {
         return this.n ||= document.querySelector("#nav");
     }
+
+    static setFocus(klass) {
+        const klasses = [".showPlants", ".showToday", ".showNewPlant"];
+        const klassIndex = klasses.indexOf(klass);
+        klasses.splice(klassIndex, 1);
+        const [a, b] = klasses; 
+        Page.nav().querySelector(a).classList.remove(..."bg-gray-900 text-white".split(" "));
+        Page.nav().querySelector(a).classList.add("text-gray-300");
+        Page.nav().querySelector(b).classList.remove(..."bg-gray-900 text-white".split(" "));
+        Page.nav().querySelector(b).classList.add("text-gray-300");
+        Page.nav().querySelector(klass).classList.add(..."bg-gray-900 text-white".split(" "));
+    }
+
 }
 
 class Plant {
