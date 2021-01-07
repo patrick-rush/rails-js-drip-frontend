@@ -31,6 +31,10 @@ class Plant {
         whitelist.forEach(attr => this[attr] = attributes[attr]);
     }
 
+    static findById(id) {
+        return this.collection.find(plant => plant.id == id)
+    }
+
     static all() {
         return fetch("http://localhost:3000/plants", {
             headers: {
@@ -55,9 +59,10 @@ class Plant {
             })
     }
 
-    static show(targetId) {
-        let plant = this.collection.find(plant => plant["id"] == targetId);
-        plant.renderPlant()
+    show() {
+        let plant = Plant.findById(this.id);
+        this.active_plant = plant;
+        plant.renderPlant();
     }
 
     static new() {
@@ -106,51 +111,22 @@ class Plant {
             })
     }
 
-    static increaseDays(id) {
-        let plant = this.collection.find(plant => plant["id"] == id);
-        let days = plant.watering_frequency.split(" ")[0];
-        let newWateringFrequency = parseInt(days) + 1 + " days";
-        plant.watering_frequency = newWateringFrequency;
-        // this = Plant above
-        return fetch(`http://localhost:3000/plants/${id}`, {
+    changeDays(plusOrMinus) {
+        let days = this.watering_frequency.split(" ")[0]
+        if (plusOrMinus === "+") {
+            let newWateringFrequency = parseInt(days) + 1 + " days";
+            this.watering_frequency = newWateringFrequency;
+        } else if (plusOrMinus === "-") {
+            let newWateringFrequency = parseInt(days) - 1 + " days";
+            this.watering_frequency = newWateringFrequency;
+        }
+        return fetch(`http://localhost:3000/plants/${this.id}`, {
             method: "PATCH",
             headers: {
                 "Accept" : "application/json",
                 "Content-Type" : "application/json"
             },
-            body: JSON.stringify({plant: {watering_frequency: newWateringFrequency}})
-        })
-            .then(res => {
-                if(res.ok) {
-                    return res.json();
-                } else {
-                    return res.text().then(error => Promise.reject(error));
-                }
-            })
-            .then(plant => {
-                console.log(plant)
-                Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
-                
-            })
-            .catch(error => {
-                new FlashMessage({type: 'error', message: error});
-            })
-    }
-    // above and below can be refactored into one method
-    static decreaseDays(id) {
-        let plant = this.collection.find(plant => plant["id"] == id);
-        console.log(plant)
-        let days = plant.watering_frequency.split(" ")[0]
-        let newWateringFrequency = parseInt(days) - 1 + " days";
-        plant.watering_frequency = newWateringFrequency;
-        // this = Plant above
-        return fetch(`http://localhost:3000/plants/${id}`, {
-            method: "PATCH",
-            headers: {
-                "Accept" : "application/json",
-                "Content-Type" : "application/json"
-            },
-            body: JSON.stringify({plant: {watering_frequency: newWateringFrequency}})
+            body: JSON.stringify({plant: {watering_frequency: this.watering_frequency}})
         })
             .then(res => {
                 if(res.ok) {
@@ -169,16 +145,49 @@ class Plant {
             })
     }
 
-    static edit() {
+    edit() {
+        console.log("got to edit plant");
+        let header = Page.rightContainer().querySelector(".header");
+        let title = header.querySelector(".title");
+        let body = Page.rightContainer().querySelector(".body");
+        title.innerText = `Edit ${this.name}`;
 
+        let plantForm = Page.rightContainer().querySelector("#newPlant");
+        body.classList.add("hidden");
+        plantForm.classList.remove("hidden");
+        
+        let name = plantForm.querySelector(".name");
+        let species = plantForm.querySelector(".species");
+        let location = plantForm.querySelector(".location");
+        let submit = plantForm.querySelector(".submit");
+        // let watering_frequency = plantForm.querySelector(".watering_frequency");
+        name.value = this.name;
+        species.value = this.species;
+        location.value = this.location;
+        // watering_frequency.value = this.watering_frequency;
+        submit.innerText = "Update";
+        submit.classList.remove("submit");
+        submit.classList.add("update");
+        // NEED TO FIGURE OUT HOW TO SET DEFAULT VALUE FOR WATERING_FREQUENCY OR REMOVE FROM FORM
     }
 
-    static update() {
+    // static update() {
 
-    }
+    // }
 
-    static destroy() {
-
+    destroy() {
+        let proceed = confirm("Are you sure you want to delete this plant?");
+        if(proceed) {
+            return fetch(`http://localhost:3000/plants/${this.id}`, {
+                method: 'DELETE'
+            })
+                .then(json => {
+                    let index = Plant.collection.findIndex(plant => plant.id == json.id);
+                    Plant.collection.splice(index, 1);
+                    this.element.remove();
+                    new FlashMessage({type: 'success', message: 'Plant successfully deleted'})
+                })
+        }
     }
 
 
@@ -188,6 +197,8 @@ class Plant {
 
         Page.rightContainer().querySelector(".increaseDays").dataset.plantId = this.id;
         Page.rightContainer().querySelector(".decreaseDays").dataset.plantId = this.id;
+        Page.rightContainer().querySelector(".editPlant").dataset.plantId = this.id;
+        Page.rightContainer().querySelector(".deletePlant").dataset.plantId = this.id;
         Page.rightContainer().querySelector(".title").textContent = this.name;
         Page.rightContainer().querySelector(".location").textContent = this.location;
         Page.rightContainer().querySelector(".watering_frequency").textContent = this.watering_frequency;

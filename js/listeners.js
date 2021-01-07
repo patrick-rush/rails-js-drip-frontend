@@ -5,40 +5,45 @@ document.addEventListener('DOMContentLoaded', function(e) {
 document.addEventListener('click', function(e) {
     let target = e.target;
     if (target.matches('.showPlants')) {
-        // Page.nav().querySelector(".showToday").classList.remove(..."bg-gray-900 text-white".split(" "));
-        // Page.nav().querySelector(".showToday").classList.add("text-gray-300");
-        // Page.nav().querySelector(".showNewPlant").classList.remove(..."bg-gray-900 text-white".split(" "));
-        // Page.nav().querySelector(".showNewPlant").classList.add("text-gray-300");
-        // Page.nav().querySelector(".showPlants").classList.add(..."bg-gray-900 text-white".split(" "));
         Page.setFocus('.showPlants');
         Plant.all();
     } else if (target.matches('.showNewPlant')) {
-        // Page.nav().querySelector(".showToday").classList.remove(..."bg-gray-900 text-white".split(" "));
-        // Page.nav().querySelector(".showToday").classList.add("text-gray-300");
-        // Page.nav().querySelector(".showPlants").classList.remove(..."bg-gray-900 text-white".split(" "));
-        // Page.nav().querySelector(".showPlants").classList.add("text-gray-300");
-        // Page.nav().querySelector(".showNewPlant").classList.add(..."bg-gray-900 text-white".split(" "));
         Page.setFocus('.showNewPlant');
         Plant.new();
     } else if (target.matches('.selectPlant')) {
         console.log('selected plant:', target.dataset.plantId);
-        Plant.show(target.dataset.plantId);
+        let plant = Plant.findById(target.dataset.plantId);
+        plant.show();
+        // Plant.show(target.dataset.plantId);
     } else if (target.matches('.increaseDays')) {
         console.log('clicked plus', target.dataset.plantId);
-        Plant.increaseDays(target.dataset.plantId);
+        // Plant.increaseDays(target.dataset.plantId);
+        let plant = Plant.findById(target.dataset.plantId);
+        // plant.increaseDays();
+        plant.changeDays("+")
     } else if (target.matches('.decreaseDays')) {
         console.log('clicked minus', target.dataset.plantId);
-        Plant.decreaseDays(target.dataset.plantId);
+        // Plant.decreaseDays(target.dataset.plantId);
+        let plant = Plant.findById(target.dataset.plantId);
+        // plant.decreaseDays();
+        plant.changeDays("-")
     } else if (target.matches('.showToday')) {
         console.log('clicked Today button');
-        // Page.nav().querySelector(".showPlants").classList.remove(..."bg-gray-900 text-white".split(" "));
-        // Page.nav().querySelector(".showPlants").classList.add("text-gray-300");
-        // Page.nav().querySelector(".showNewPlant").classList.remove(..."bg-gray-900 text-white".split(" "));
-        // Page.nav().querySelector(".showNewPlant").classList.add("text-gray-300");
-        // Page.nav().querySelector(".showToday").classList.add(..."bg-gray-900 text-white".split(" "));
         Page.setFocus('.showToday');
         CareEvent.today();
-    } 
+    } else if (target.matches('.editPlant')) {
+        console.log('clicked editPlant', target.dataset.plantId);
+        let plant = Plant.findById(target.dataset.plantId);
+        plant.edit();
+    } else if (target.matches('.deletePlant')) {
+        console.log('clicked deletePlant', target.dataset.plantId);
+        let plant = Plant.findById(target.dataset.plantId);
+        plant.destroy();
+        // Plant.destroy(target.dataset.plantId)
+    } else if (target.matches('.update')) {
+        console.log('clicked update');
+        let plant = Plant.findById(target.dataset.plantId);
+    }
 })
 
 document.addEventListener('submit', function(e) {
