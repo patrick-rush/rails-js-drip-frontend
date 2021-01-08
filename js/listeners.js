@@ -9,6 +9,7 @@ document.addEventListener('click', function(e) {
         Plant.all();
     } else if (target.matches('.showNewPlant')) {
         Page.setFocus('.showNewPlant');
+        Page.resetForm();
         Plant.new();
     } else if (target.matches('.selectPlant')) {
         console.log('selected plant:', target.dataset.plantId);
@@ -40,10 +41,7 @@ document.addEventListener('click', function(e) {
         let plant = Plant.findById(target.dataset.plantId);
         plant.destroy();
         // Plant.destroy(target.dataset.plantId)
-    } else if (target.matches('.update')) {
-        console.log('clicked update');
-        let plant = Plant.findById(target.dataset.plantId);
-    }
+    } 
 })
 
 document.addEventListener('submit', function(e) {
@@ -55,6 +53,14 @@ document.addEventListener('submit', function(e) {
             formData[input.name] = input.value;
         })
         Plant.create(formData);
+    } else if (target.matches('#updatePlant')) {
+        e.preventDefault();
+        let formData = {};
+        target.querySelectorAll('input').forEach(function(input) {
+            formData[input.name] = input.value;
+        })
+        let plant = Plant.findById(target.dataset.plantId);
+        plant.update(formData);
     }
 })
 
