@@ -129,12 +129,14 @@ class Plant {
     }
 
     changeDays(plusOrMinus) {
-        let days = this.watering_frequency.split(" ")[0]
+        // let days = this.watering_frequency.split(" ")[0]
         if (plusOrMinus === "+") {
-            let newWateringFrequency = parseInt(days) + 1 + " days";
+            // let newWateringFrequency = parseInt(days) + 1 + " days";
+            let newWateringFrequency = this.watering_frequency + 1;
             this.watering_frequency = newWateringFrequency;
         } else if (plusOrMinus === "-") {
-            let newWateringFrequency = parseInt(days) - 1 + " days";
+            // let newWateringFrequency = parseInt(days) - 1 + " days";
+            let newWateringFrequency = this.watering_frequency - 1;
             this.watering_frequency = newWateringFrequency;
         }
         return fetch(`http://localhost:3000/plants/${this.id}`, {
@@ -154,7 +156,7 @@ class Plant {
             })
             .then(plant => {
                 console.log(plant)
-                Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
+                Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
                 
             })
             .catch(error => {
@@ -182,7 +184,7 @@ class Plant {
         name.value = this.name;
         species.value = this.species;
         location.value = this.location;
-        watering_frequency.value = this.watering_frequency.split(" ")[0];
+        watering_frequency.value = this.watering_frequency;
         submit.innerText = "Update";
         plantForm.dataset.plantId = this.id;
         plantForm.id = "updatePlant"
@@ -244,7 +246,7 @@ class Plant {
         Page.rightContainer().querySelector(".deletePlant").dataset.plantId = this.id;
         Page.rightContainer().querySelector(".title").textContent = this.name + " the " + this.species;
         Page.rightContainer().querySelector(".location").textContent = this.location;
-        Page.rightContainer().querySelector(".watering_frequency").textContent = this.watering_frequency;
+        Page.rightContainer().querySelector(".watering_frequency").textContent = this.watering_frequency + " days";
         // Will need to render notes and care events here as well
         return this.element;
     }
