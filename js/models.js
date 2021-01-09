@@ -15,6 +15,24 @@ class Page {
         return this.f ||= document.querySelector("#newPlant");
     }
 
+    static welcome() {
+        return this.w ||= document.querySelector(".welcome");
+    }
+
+    static showWelcome() {
+        Page.rightContainer().querySelector(".title").innerHTML = "<br>";
+        Page.rightContainer().querySelector(".body").classList.add("hidden");
+        Page.welcome().style.display = "block";
+        Page.formContainer().classList.add("hidden");
+    }
+
+    static hideWelcome() {
+        // setTimeout(() => (document.querySelector("main").classList.add("hidden")), 3000); 
+        Page.welcome().style.display = "none";
+        // welcome.classList.add(..."transition duration-500 ease-in-out".split(" "));
+
+    }
+
     static setFocus(klass) {
         const klasses = [".showPlants", ".showToday", ".showNewPlant"];
         const klassIndex = klasses.indexOf(klass);
@@ -51,6 +69,7 @@ class Plant {
     }
 
     static all() {
+        Page.showWelcome();
         return fetch("http://localhost:3000/plants", {
             headers: {
                 "Accept": "application/json",

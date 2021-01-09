@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function(e) {
 
 document.addEventListener('click', function(e) {
     let target = e.target;
+    Page.hideWelcome();
+
     if (target.matches('.showPlants')) {
         Page.setFocus('.showPlants');
         Plant.all();
@@ -30,6 +32,7 @@ document.addEventListener('click', function(e) {
         plant.changeDays("-")
     } else if (target.matches('.showToday')) {
         console.log('clicked Today button');
+        Page.showWelcome();
         Page.setFocus('.showToday');
         CareEvent.today();
     } else if (target.matches('.editPlant')) {
@@ -43,6 +46,9 @@ document.addEventListener('click', function(e) {
         // Plant.destroy(target.dataset.plantId)
     } 
 })
+
+// document.addEventListener('click', function(e) {
+// })
 
 document.addEventListener('submit', function(e) {
     let target = e.target;
