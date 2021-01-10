@@ -44,7 +44,15 @@ document.addEventListener('click', function(e) {
         let plant = Plant.findById(target.dataset.plantId);
         plant.destroy();
         // Plant.destroy(target.dataset.plantId)
-    } 
+    } else if (target.matches('.selectEvent')) {
+        console.log('clicked selectEvent', target.dataset.careEventId);
+        let careEvent = CareEvent.findById(target.dataset.careEventId);
+        careEvent.show();
+    } else if (target.matches('.completed')) {
+        console.log('clicked the checkmark', target.dataset.careEventId)
+        let careEvent = CareEvent.findById(target.dataset.careEventId);
+        careEvent.markCompleted(); 
+    }
 })
 
 // document.addEventListener('click', function(e) {

@@ -22,6 +22,7 @@ class Page {
     static showWelcome() {
         Page.rightContainer().querySelector(".title").innerHTML = "<br>";
         Page.rightContainer().querySelector(".body").classList.add("hidden");
+        Page.rightContainer().querySelector(".careEventBody").classList.add("hidden");
         Page.welcome().style.display = "block";
         Page.formContainer().classList.add("hidden");
     }
@@ -94,10 +95,8 @@ class Plant {
     }
 
     show() {
-        let plant = Plant.findById(this.id);
-        this.active_plant = plant;
-        plant.toggleActive();
-        plant.renderPlant();
+        this.toggleActive();
+        this.renderPlant();
     }
 
     static new() {
@@ -105,10 +104,12 @@ class Plant {
         let header = Page.rightContainer().querySelector(".header");
         let title = header.querySelector(".title");
         let body = Page.rightContainer().querySelector(".body");
+        let careEventBody = Page.rightContainer().querySelector('.careEventBody');
         title.innerText = "Create a New Plant";
 
         let plantForm = Page.formContainer();
         body.classList.add("hidden");
+        careEventBody.classList.add("hidden");
         plantForm.classList.remove("hidden");        
     }
 
@@ -176,7 +177,7 @@ class Plant {
             .then(plant => {
                 console.log(plant)
                 Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
-                
+                Page.rightContainer().querySelector(".careEventBody").querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
             })
             .catch(error => {
                 new FlashMessage({type: 'error', message: error});
@@ -296,8 +297,13 @@ class Plant {
 
 class CareEvent {
     constructor(attributes) {
-        let whitelist = ["id", "event_type", "due_date", "completed", "plant_id"];
+        let whitelist = ["id", "event_type", "due_date", "completed", "plant_id", "active"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
+        if(this.active) { CareEvent.active = this; }
+    }
+
+    static findById(id) {
+        return this.collection.find(careEvent => careEvent.id == id);
     }
 
     static today() {
@@ -325,6 +331,11 @@ class CareEvent {
             })
     }
 
+    show() {
+        this.toggleActive();
+        this.renderCareEvent();
+    }
+
     render() { 
         // debugger
         this.element ||= document.createElement('div');
@@ -333,11 +344,35 @@ class CareEvent {
         this.eventNameLink ||= document.createElement('a');
         this.eventNameLink.href = "#"
         this.eventNameLink.classList.add(..."text-sm font-medium text-gray-500 selectEvent".split(" "));
+        if (this.completed == true) {
+            this.eventNameLink.classList.add("line-through");
+        }
         this.eventNameLink.textContent = `${this.event_type} ${this.plantName()}`;
         this.eventNameLink.dataset.careEventId = this.id;
 
         this.element.append(this.eventNameLink);
 
+        return this.element;
+    }
+
+    renderCareEvent() {
+        Page.rightContainer().querySelector(".body").classList.add("hidden");
+        Page.formContainer().classList.add("hidden");
+        Page.rightContainer().querySelector(".careEventBody").classList.remove("hidden");
+
+        let plant = Plant.findById(this.plant_id);
+        console.log(plant)
+        Page.rightContainer().querySelector(".careEventBody").querySelector(".increaseDays").dataset.plantId = plant.id;
+        Page.rightContainer().querySelector(".careEventBody").querySelector(".decreaseDays").dataset.plantId = plant.id;
+        Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.careEventId = this.id;
+        if (this.completed == true) {
+            Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.add("text-green-500");
+        } else if (this.completed == false) {
+            Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.remove("text-green-500");            
+        }
+        Page.rightContainer().querySelector(".title").textContent = this.event_type + " " + plant.name;
+        Page.rightContainer().querySelector(".careEventBody").querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
+        // Will need to render notes and care events here as well
         return this.element;
     }
 
@@ -372,6 +407,64 @@ class CareEvent {
             })
     }
 
+    markCompleted() {
+        return fetch(`http://localhost:3000/care_events/${this.id}`, {
+            method: "PATCH",
+            headers: {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({care_event: {completed: true}})
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(json => {
+                this.completed = json.completed
+                Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.add("text-green-500");
+                this.render();
+                return Plant.findById(this.plant_id)
+            })
+            .then(plant => {
+                // "id", "event_type", "due_date", "completed", "plant_id", "active"
+                CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
+            })
+        // return fetch(`http://localhost:3000/plants/${this.id}`, {
+        //     method: "PATCH",
+        //     headers: {
+        //         "Accept" : "application/json",
+        //         "Content-Type" : "application/json"
+        //     },
+        //     body: JSON.stringify({plant: {watering_frequency: this.watering_frequency}})
+        // })
+        //     .then(res => {
+        //         if(res.ok) {
+        //             return res.json();
+        //         } else {
+        //             return res.text().then(error => Promise.reject(error));
+        //         }
+        //     })
+        //     .then(plant => {
+        //         console.log(plant)
+        //         Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
+        //         Page.rightContainer().querySelector(".careEventBody").querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
+        //     })
+        //     .catch(error => {
+        //         new FlashMessage({type: 'error', message: error});
+        //     })
+
+    }
+
+    static calculateDate(frequency) {
+        let date = new Date();
+        date.setDate(date.getDate() + frequency);
+        return date;
+    }
+
     static edit() {
 
     }
@@ -382,6 +475,13 @@ class CareEvent {
 
     static destroy() {
 
+    }
+
+    toggleActive() {
+        if(CareEvent.active) {
+            CareEvent.active.active = false;
+        }
+        CareEvent.active = this;
     }
 
 }
