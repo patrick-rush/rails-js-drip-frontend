@@ -57,6 +57,9 @@ document.addEventListener('click', function(e) {
         Note.new();
     } else if (target.matches('.removeForm')) {
         Note.removeForm();
+    } else if (target.matches('.trashNote')) {
+        let note = Note.findById(target.dataset.noteId);
+        note.destroy(target.dataset.noteId);
     }
 })
 

@@ -39,11 +39,11 @@ class Page {
         const klassIndex = klasses.indexOf(klass);
         klasses.splice(klassIndex, 1);
         const [a, b] = klasses; 
-        Page.nav().querySelector(a).classList.remove(..."bg-gray-900 text-white".split(" "));
-        Page.nav().querySelector(a).classList.add("text-gray-300");
-        Page.nav().querySelector(b).classList.remove(..."bg-gray-900 text-white".split(" "));
-        Page.nav().querySelector(b).classList.add("text-gray-300");
-        Page.nav().querySelector(klass).classList.add(..."bg-gray-900 text-white".split(" "));
+        Page.nav().querySelector(a).classList.remove(..."bg-green-900 text-white".split(" "));
+        Page.nav().querySelector(a).classList.add("text-green-100");
+        Page.nav().querySelector(b).classList.remove(..."bg-green-900 text-white".split(" "));
+        Page.nav().querySelector(b).classList.add("text-green-100");
+        Page.nav().querySelector(klass).classList.add(..."bg-green-900 text-white".split(" "));
     }
 
     static resetForm() {
@@ -463,7 +463,11 @@ class Note {
     constructor(attributes) {
         let whitelist = ["id", "content", "plant_id", "created_at", "active"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
-        if(this.active) { CareEvent.active = this; }
+        if(this.active) { Note.active = this; }
+    }
+
+    static findById(id) {
+        return Plant.active.noteCollection.find(note => note.id == id);
     }
 
     static allByPlantId(plantId) {
@@ -481,12 +485,16 @@ class Note {
                 }
             })
             .then(noteArray => {
+                let plant = Plant.findById(plantId);
+                plant.noteCollection ||= noteArray.map(attrs => new Note(attrs));
+                // this.collection ||= plantArray.map(attrs => new Plant(attrs));
+
                 console.log(noteArray)
-                let notes = noteArray.map(attrs => new Note(attrs));
-                let renderedNotes = notes.map(note => note.render());
+                // let notes = noteArray.map(attrs => new Note(attrs));
+                let renderedNotes = plant.noteCollection.map(note => note.render());
                 Page.rightContainer().querySelector(".notesContainer").append(...renderedNotes);
 
-                return notes;
+                return plant.noteCollection;
             })
     }
 
@@ -567,7 +575,7 @@ class Note {
             })
         }    
 
-    render () {
+    render() {
         this.element ||= document.createElement('div');
         this.element.classList.add(..."newNote bg-white shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
 
@@ -584,13 +592,41 @@ class Note {
         this.date.classList.add(..."px-4 pt-5 pb-0 col-span-full".split(" "));
         this.date.textContent = date;
 
+        this.trashCanLink ||= document.createElement('a');
+        this.trashCanLink.href = "#deleteNote";
+        this.trashCanLink.classList.add(..."my-4 p-2 text-right".split(" "));
+
+        this.icon ||= document.createElement('i');
+        this.icon.classList.add(..."fa p-2 fa-trash trashNote".split(" "));
+        this.icon.dataset.noteId = this.id;
+
+        this.trashCanLink.append(this.icon)
+
         this.contentBox ||= document.createElement('div');
         this.contentBox.classList.add(..."px-4 py-5 col-span-full".split(" "));
         this.contentBox.textContent = this.content;
 
+        this.date.append(this.trashCanLink);
+
         this.element.append(this.date, this.contentBox);
 
         return this.element;
+    }
+
+    destroy() {
+        let proceed = confirm("Are you sure you want to delete this note?");
+        if(proceed) {
+            return fetch(`http://localhost:3000/notes/${this.id}`, {
+                method: 'DELETE'
+            })
+                .then(json => {
+                    let index = Plant.active.noteCollection.findIndex(note => note.id == json.id);
+                    Plant.active.noteCollection.splice(index, 1);
+                    console.log("this is note destory's this: ", this);
+                    this.element.remove();
+                    new FlashMessage({type: 'success', message: 'Note successfully deleted'})
+                })
+        }
     }
 }
 
