@@ -133,11 +133,6 @@ class Plant {
             .then(plantAttributes => {
                 let plant = new Plant(plantAttributes);
                 this.collection.push(plant);
-                // Page.rightContainer().querySelector(".body").classList.remove("hidden");
-                // Page.formContainer().classList.add("hidden");
-                // Page.rightContainer().querySelector(".title").textContent = plant.name;
-                // Page.rightContainer().querySelector(".location").textContent = plant.location;
-                // Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency;
                 plant.renderPlant();
                 Page.leftContainer().append(plant.render());
                 CareEvent.create({plant_id: plant.id, event_type: "water", due_date: new Date().toLocaleDateString()})
@@ -208,10 +203,6 @@ class Plant {
         submit.innerText = "Update";
         plantForm.dataset.plantId = this.id;
         plantForm.id = "updatePlant"
-        // remember to change button text back to Save
-        // submit.classList.remove("submit");
-        // submit.classList.add("update");
-        // NEED TO FIGURE OUT HOW TO SET DEFAULT VALUE FOR WATERING_FREQUENCY OR REMOVE FROM FORM
     }
 
     update(formData) {
@@ -268,6 +259,11 @@ class Plant {
         Page.rightContainer().querySelector(".location").textContent = this.location;
         Page.rightContainer().querySelector(".watering_frequency").textContent = this.watering_frequency + " days";
         // Will need to render notes and care events here as well
+        // Page.rightContainer().querySelector(".notesContainer").append(...Note.allByPlantId(this.id));
+        Page.rightContainer().querySelector(".addNoteIcon").dataset.plantId = this.id;
+        let notes = Page.rightContainer().querySelectorAll(".newNote");
+        notes.forEach((note) => {note.remove()})
+        Note.allByPlantId(this.id);
         return this.element;
     }
 
@@ -380,9 +376,9 @@ class CareEvent {
         return Plant.collection.find(plant => plant["id"] == this.plant_id).name;
     }
 
-    static new() {
+    // static new() {
 
-    }
+    // }
 
     static create(attrs) {
         return fetch("http://localhost:3000/care_events", {
@@ -433,30 +429,6 @@ class CareEvent {
                 // "id", "event_type", "due_date", "completed", "plant_id", "active"
                 CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
             })
-        // return fetch(`http://localhost:3000/plants/${this.id}`, {
-        //     method: "PATCH",
-        //     headers: {
-        //         "Accept" : "application/json",
-        //         "Content-Type" : "application/json"
-        //     },
-        //     body: JSON.stringify({plant: {watering_frequency: this.watering_frequency}})
-        // })
-        //     .then(res => {
-        //         if(res.ok) {
-        //             return res.json();
-        //         } else {
-        //             return res.text().then(error => Promise.reject(error));
-        //         }
-        //     })
-        //     .then(plant => {
-        //         console.log(plant)
-        //         Page.rightContainer().querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
-        //         Page.rightContainer().querySelector(".careEventBody").querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
-        //     })
-        //     .catch(error => {
-        //         new FlashMessage({type: 'error', message: error});
-        //     })
-
     }
 
     static calculateDate(frequency) {
@@ -465,17 +437,17 @@ class CareEvent {
         return date;
     }
 
-    static edit() {
+    // static edit() {
 
-    }
+    // }
 
-    static update() {
+    // static update() {
 
-    }
+    // }
 
-    static destroy() {
+    // static destroy() {
 
-    }
+    // }
 
     toggleActive() {
         if(CareEvent.active) {
@@ -484,6 +456,141 @@ class CareEvent {
         CareEvent.active = this;
     }
 
+}
+
+class Note {
+    constructor(attributes) {
+        let whitelist = ["id", "content", "plant_id", "created_at", "active"];
+        whitelist.forEach(attr => this[attr] = attributes[attr]);
+        if(this.active) { CareEvent.active = this; }
+    }
+
+    static allByPlantId(plantId) {
+        return fetch(`http://localhost:3000/plants/${plantId}/notes`, {
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        })
+            .then(res => {
+                if(res.ok) {
+                return res.json()
+                } else {
+                return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(noteArray => {
+                console.log(noteArray)
+                let notes = noteArray.map(attrs => new Note(attrs));
+                let renderedNotes = notes.map(note => note.render());
+                Page.rightContainer().querySelector(".notesContainer").append(...renderedNotes);
+
+                return notes;
+            })
+    }
+
+    static new() {
+        let icon = document.querySelector(".notesContainer").querySelector('.addNoteIcon')
+        icon.classList.remove(..."fa fa-plus addNoteIcon".split(" "));
+        icon.classList.add(..."fa fa-minus removeForm".split(" "));
+
+        this.form ||= document.createElement('form');
+        this.form.classList.add(..."newNote bg-white shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
+
+        this.contentBox ||= document.createElement('div');
+        this.contentBox.classList.add(..."col-span-6 sm:col-span-3".split(" "));
+
+        this.label ||= document.createElement('label');
+
+        this.textarea ||= document.createElement('textarea');
+        this.textarea.name = "content";
+        this.textarea.classList.add(..."p-2 location mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md".split(" "));
+    
+        this.contentBox.append(this.label, this.textarea);
+
+        this.buttonContainer ||= document.createElement("div");
+        this.buttonContainer.classList.add(..."px-4 py-3 bg-gray-50 text-right sm:px-6".split(" "));
+
+        this.submitButton ||= document.createElement("button");
+        this.submitButton.setAttribute("type", "submit");
+        this.submitButton.id = "submitNote"
+        this.submitButton.classList.add(..."inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500".split(" "));
+        this.submitButton.innerText = "Save";
+        
+        this.buttonContainer.append(this.submitButton);
+
+        this.form.append(this.contentBox, this.buttonContainer);
+
+        let notesContainer = Page.rightContainer().querySelector(".notesContainer");
+        notesContainer.insertBefore(this.form, notesContainer.children[1]);
+
+        return this.form
+    }
+
+    static removeForm() {
+        Page.rightContainer().querySelector(".notesContainer").querySelector('form').remove();
+        
+        let icon = document.querySelector(".notesContainer").querySelector('.removeForm');
+        icon.classList.remove(..."fa fa-minus removeForm".split(" "));
+        icon.classList.add(..."fa fa-plus addNoteIcon".split(" "));
+    }
+
+    static create(formData) {
+        return fetch("http://localhost:3000/notes/", {
+            method: "POST",
+            headers: {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({note: formData})
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(noteAttributes => {
+                let note = new Note(noteAttributes);
+                let renderedNote = note.render();
+                let notesContainer = Page.rightContainer().querySelector(".notesContainer");
+                notesContainer.insertBefore(renderedNote, notesContainer.children[1]);
+                
+                new FlashMessage({type: 'success', message: 'New note added successfully'})
+                // notesContainer.querySelector('form').remove();
+                Note.removeForm();
+            })
+            .catch(error => {
+                new FlashMessage({type: 'error', message: error});
+            })
+        }    
+
+    render () {
+        this.element ||= document.createElement('div');
+        this.element.classList.add(..."newNote bg-white shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
+
+        let date = new Date(this.created_at).toLocaleDateString(
+            'en-us',
+            {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }
+        );
+
+        this.date ||= document.createElement('div');
+        this.date.classList.add(..."px-4 pt-5 pb-0 col-span-full".split(" "));
+        this.date.textContent = date;
+
+        this.contentBox ||= document.createElement('div');
+        this.contentBox.classList.add(..."px-4 py-5 col-span-full".split(" "));
+        this.contentBox.textContent = this.content;
+
+        this.element.append(this.date, this.contentBox);
+
+        return this.element;
+    }
 }
 
 class FlashMessage {

@@ -143,9 +143,13 @@
                   </li>
 
                 </div> -->
-                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <li class="text-sm font-medium text-gray-500">
-                    Notes
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:px-6">
+                  <li class="notesContainer text-sm font-medium text-gray-500">
+                    Notes <a href="#addNote" class="my-4 p-2 text-right"><i class="fa fa-plus addNoteIcon"></i></a>
+                    <!-- <div class="notesBox bg-white shadow overflow-hidden sm:rounded-lg mt-5">
+                      <div class="px-4 pt-5 pb-0 col-span-full">Date Goes Here</div>
+                      <div class="px-4 py-5 col-span-full">Content Goes Here</div>
+                    </div> -->
                   </li>
                 </div>  
                 <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -183,7 +187,7 @@
                 </div>
                 <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <li class="text-sm font-medium text-gray-500">
-                    Add Note <a href="#addNote" class="my-4 p-2 text-right"><i class="fa fa-plus increaseDays"></i></a>      
+                    Add Note <a href="#addNote" class="my-4 p-2 text-right"><i class="fa fa-plus addNoteIcon"></i></a>      
                   </li>
                 </div>  
 
@@ -209,7 +213,7 @@
                             </div>
                             <div class="col-span-6 sm:col-span-3">
                               <label for="watering_frequency" class="block text-sm font-medium text-gray-700">Watering Frequency (days)</label>
-                              <input type="number" name="watering_frequency" id="watering_frequency" class="watering_frequency mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                              <input type="number" name="watering_frequency" id="watering_frequency" value="0" class="watering_frequency mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                             </div>
                             <!-- <div class="col-span-6 sm:col-span-3">
                               <label for="fertilizing_frequency" class="block text-sm font-medium text-gray-700">Fertilizing Frequency (weeks)</label>

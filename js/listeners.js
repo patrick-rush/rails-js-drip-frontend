@@ -52,6 +52,11 @@ document.addEventListener('click', function(e) {
         console.log('clicked the checkmark', target.dataset.careEventId)
         let careEvent = CareEvent.findById(target.dataset.careEventId);
         careEvent.markCompleted(); 
+    } else if (target.matches('.addNoteIcon')) {
+        console.log('clicked add note', target.dataset.plantId);
+        Note.new();
+    } else if (target.matches('.removeForm')) {
+        Note.removeForm();
     }
 })
 
@@ -60,21 +65,31 @@ document.addEventListener('click', function(e) {
 
 document.addEventListener('submit', function(e) {
     let target = e.target;
+    e.preventDefault();
     if (target.matches('#newPlant')) {
-        e.preventDefault();
+        // e.preventDefault();
         let formData = {};
         target.querySelectorAll('input').forEach(function(input) {
             formData[input.name] = input.value;
         })
         Plant.create(formData);
     } else if (target.matches('#updatePlant')) {
-        e.preventDefault();
+        // e.preventDefault();
         let formData = {};
         target.querySelectorAll('input').forEach(function(input) {
             formData[input.name] = input.value;
         })
         let plant = Plant.findById(target.dataset.plantId);
         plant.update(formData);
+    } else if (target.matches('.newNote')) {
+        // e.preventDefault();
+        console.log("clicked save new note")
+        let content = target.querySelector('textarea').value;
+        let formData = {
+            "content" : content,
+            "plant_id" : Plant.active.id
+        };
+        Note.create(formData);
     }
 })
 
