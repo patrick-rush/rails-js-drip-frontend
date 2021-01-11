@@ -243,6 +243,7 @@ class Plant {
                     Plant.collection.splice(index, 1);
                     this.element.remove();
                     new FlashMessage({type: 'success', message: 'Plant successfully deleted'})
+                    Page.showWelcome();
                 })
         }
     }
@@ -504,7 +505,7 @@ class Note {
 
         this.textarea ||= document.createElement('textarea');
         this.textarea.name = "content";
-        this.textarea.classList.add(..."p-2 location mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md".split(" "));
+        this.textarea.classList.add(..."p-2 location mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md".split(" "));
     
         this.contentBox.append(this.label, this.textarea);
 
@@ -514,7 +515,7 @@ class Note {
         this.submitButton ||= document.createElement("button");
         this.submitButton.setAttribute("type", "submit");
         this.submitButton.id = "submitNote"
-        this.submitButton.classList.add(..."inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500".split(" "));
+        this.submitButton.classList.add(..."inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500".split(" "));
         this.submitButton.innerText = "Save";
         
         this.buttonContainer.append(this.submitButton);
