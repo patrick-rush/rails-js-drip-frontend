@@ -135,7 +135,7 @@ class Plant {
                 this.collection.push(plant);
                 plant.renderPlant();
                 Page.leftContainer().append(plant.render());
-                CareEvent.create({plant_id: plant.id, event_type: "water", due_date: new Date().toLocaleDateString()})
+                CareEvent.create({plant_id: plant.id, event_type: "Water", due_date: new Date().toLocaleDateString()})
                 new FlashMessage({type: 'success', message: 'New plant added successfully'});
             })
             .catch(error => {
@@ -207,7 +207,6 @@ class Plant {
 
     update(formData) {
         let plantForm = Page.formContainer();
-        plantForm.id = "newPlant";
 
         return fetch(`http://localhost:3000/plants/${this.id}`, {
             method: "PUT",
@@ -227,8 +226,14 @@ class Plant {
             .then(json => {
                 Object.keys(json).forEach((key) => this[key] = json[key])
                 Page.resetForm();
+                plantForm.id = "newPlant";
+
                 this.render();
                 this.renderPlant();
+                new FlashMessage({type: 'success', message: 'Plant updated successfully'});
+            })
+            .catch(error => {
+                new FlashMessage({type: 'error', message: error});
             })
     }
 
@@ -333,6 +338,15 @@ class CareEvent {
         this.renderCareEvent();
     }
 
+    overdue() {
+        const dateFormat = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }
+        return Boolean(new Date(this.due_date).toLocaleDateString('en-us', dateFormat) > new Date().toLocaleDateString('en-us', dateFormat));
+    }
+
     render() { 
         // debugger
         this.element ||= document.createElement('div');
@@ -343,6 +357,12 @@ class CareEvent {
         this.eventNameLink.classList.add(..."text-sm font-medium text-gray-500 selectEvent".split(" "));
         if (this.completed == true) {
             this.eventNameLink.classList.add("line-through");
+            this.eventNameLink.classList.remove("text-yellow-500");
+        } else if (this.completed == false) {
+            this.eventNameLink.classList.remove("line-through");
+            if (this.overdue()) {
+                this.eventNameLink.classList.add("text-yellow-500");
+            }
         }
         this.eventNameLink.textContent = `${this.event_type} ${this.plantName()}`;
         this.eventNameLink.dataset.careEventId = this.id;
@@ -358,7 +378,6 @@ class CareEvent {
         Page.rightContainer().querySelector(".careEventBody").classList.remove("hidden");
 
         let plant = Plant.findById(this.plant_id);
-        console.log(plant)
         Page.rightContainer().querySelector(".careEventBody").querySelector(".increaseDays").dataset.plantId = plant.id;
         Page.rightContainer().querySelector(".careEventBody").querySelector(".decreaseDays").dataset.plantId = plant.id;
         Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.careEventId = this.id;
@@ -367,7 +386,21 @@ class CareEvent {
         } else if (this.completed == false) {
             Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.remove("text-green-500");            
         }
-        Page.rightContainer().querySelector(".title").textContent = this.event_type + " " + plant.name;
+
+        let date = new Date(this.due_date).toLocaleDateString(
+            'en-us',
+            {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }
+        );
+
+        Page.rightContainer().querySelector(".title").textContent = `${this.event_type} ${plant.name} (Due ${date})`;
+        if (this.overdue()) {
+            Page.rightContainer().querySelector(".title").classList.remove("text-green-900");
+            Page.rightContainer().querySelector(".title").classList.add("text-yellow-500");
+        }
         Page.rightContainer().querySelector(".careEventBody").querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
         // Will need to render notes and care events here as well
         return this.element;
@@ -401,6 +434,7 @@ class CareEvent {
                 this.collection ||= [];
                 let careEvent = new CareEvent(careEventAttributes);
                 this.collection.push(careEvent);
+                return careEvent;
             })
     }
 
@@ -423,12 +457,41 @@ class CareEvent {
             .then(json => {
                 this.completed = json.completed
                 Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.add("text-green-500");
+
                 this.render();
                 return Plant.findById(this.plant_id)
             })
             .then(plant => {
                 // "id", "event_type", "due_date", "completed", "plant_id", "active"
-                CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
+                return CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
+            })
+            .then(careEvent => {
+                Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.nextCareEventId = careEvent.id;
+                console.log("next care event id is ", careEvent.id)
+            })
+    }
+
+    markNotCompleted() {
+        return fetch(`http://localhost:3000/care_events/${this.id}`, {
+            method: "PATCH",
+            headers: {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({care_event: {completed: false}})
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(json => {
+                this.completed = json.completed
+                Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.remove("text-green-500");
+                delete Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.nextCareEventId;
+                this.render();
             })
     }
 
@@ -446,9 +509,20 @@ class CareEvent {
 
     // }
 
-    // static destroy() {
+    destroy() {
+        console.log(this)
+        return fetch(`http://localhost:3000/care_events/${this.id}`, {
+            method: 'DELETE'
+        })
+            .then(json => {
+                let index = CareEvent.collection.findIndex(careEvent => careEvent.id == json.id);
+                CareEvent.collection.splice(index, 1);
+                // this.element.remove();
+                // new FlashMessage({type: 'success', message: 'Plant successfully deleted'})
+                // Page.showWelcome();
+            })
 
-    // }
+    }
 
     toggleActive() {
         if(CareEvent.active) {

@@ -50,8 +50,15 @@ document.addEventListener('click', function(e) {
         careEvent.show();
     } else if (target.matches('.completed')) {
         console.log('clicked the checkmark', target.dataset.careEventId)
-        let careEvent = CareEvent.findById(target.dataset.careEventId);
-        careEvent.markCompleted(); 
+        if (target.dataset.nextCareEventId) {
+            let nextCareEvent = CareEvent.findById(target.dataset.nextCareEventId);
+            let careEvent = CareEvent.findById(target.dataset.careEventId);
+            nextCareEvent.destroy();
+            careEvent.markNotCompleted();
+        } else {
+            let careEvent = CareEvent.findById(target.dataset.careEventId);
+            careEvent.markCompleted(); 
+        }
     } else if (target.matches('.addNoteIcon')) {
         console.log('clicked add note', target.dataset.plantId);
         Note.new();
@@ -60,7 +67,7 @@ document.addEventListener('click', function(e) {
     } else if (target.matches('.trashNote')) {
         let note = Note.findById(target.dataset.noteId);
         note.destroy(target.dataset.noteId);
-    }
+    } 
 })
 
 // document.addEventListener('click', function(e) {
