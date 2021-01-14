@@ -339,12 +339,12 @@ class CareEvent {
     }
 
     overdue() {
-        const dateFormat = {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        }
-        return Boolean(new Date(this.due_date).toLocaleDateString('en-us', dateFormat) > new Date().toLocaleDateString('en-us', dateFormat));
+        // const dateFormat = {
+        //     year: 'numeric',
+        //     month: 'long',
+        //     day: 'numeric'
+        // }
+        return Boolean(new Date(this.due_date).toLocaleDateString() < new Date().toLocaleDateString());
     }
 
     render() { 
@@ -397,10 +397,10 @@ class CareEvent {
         );
 
         Page.rightContainer().querySelector(".title").textContent = `${this.event_type} ${plant.name} (Due ${date})`;
-        if (this.overdue()) {
-            Page.rightContainer().querySelector(".title").classList.remove("text-green-900");
-            Page.rightContainer().querySelector(".title").classList.add("text-yellow-500");
-        }
+        // if (this.overdue()) {
+        //     Page.rightContainer().querySelector(".title").classList.remove("text-green-900");
+        //     Page.rightContainer().querySelector(".title").classList.add("text-yellow-500");
+        // }
         Page.rightContainer().querySelector(".careEventBody").querySelector(".watering_frequency").textContent = plant.watering_frequency + " days";
         // Will need to render notes and care events here as well
         return this.element;
