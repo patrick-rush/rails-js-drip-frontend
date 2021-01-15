@@ -50,15 +50,26 @@ document.addEventListener('click', function(e) {
         careEvent.show();
     } else if (target.matches('.completed')) {
         console.log('clicked the checkmark', target.dataset.careEventId)
-        if (target.dataset.nextCareEventId) {
-            let nextCareEvent = CareEvent.findById(target.dataset.nextCareEventId);
-            let careEvent = CareEvent.findById(target.dataset.careEventId);
-            nextCareEvent.destroy();
-            careEvent.markNotCompleted();
+        let careEvent = CareEvent.findById(target.dataset.careEventId);
+        if (careEvent.completed) {
+            if (target.dataset.nextCareEventId) {
+                let nextCareEvent = CareEvent.findById(target.dataset.nextCareEventId);
+                nextCareEvent.destroy();
+                careEvent.markNotCompleted();
+            } else {
+                careEvent.markNotCompleted();
+            }
         } else {
-            let careEvent = CareEvent.findById(target.dataset.careEventId);
-            careEvent.markCompleted(); 
+            careEvent.markCompleted();
         }
+        
+        // if (target.dataset.nextCareEventId) {
+        //     let nextCareEvent = CareEvent.findById(target.dataset.nextCareEventId);
+        //     nextCareEvent.destroy();
+        //     careEvent.markNotCompleted();
+        // } else {
+        //     careEvent.markCompleted(); 
+        // }
     } else if (target.matches('.addNoteIcon')) {
         console.log('clicked add note', target.dataset.plantId);
         Note.new();
@@ -68,6 +79,10 @@ document.addEventListener('click', function(e) {
         let note = Note.findById(target.dataset.noteId);
         note.destroy(target.dataset.noteId);
     } 
+    // else if (target.matches('.selectCareEvent')) {
+    //     let careEvent = CareEvent.findById(target.dataset.careEventId);
+
+    // }
 })
 
 // document.addEventListener('click', function(e) {

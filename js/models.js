@@ -70,7 +70,7 @@ class Page {
 
 class Plant {
     constructor(attributes) {
-        let whitelist = ["id", "name", "species", "location", "watering_frequency", "fertalizating_frequency", "user_id", "active"];
+        let whitelist = ["id", "name", "species", "location", "watering_frequency", "fertalizating_frequency", "user_id", "active", "careEvents"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
         if(this.active) { Plant.active = this; }
     }
@@ -89,13 +89,15 @@ class Plant {
         })
             .then(res => {
                 if(res.ok) {
-                return res.json()
+                    return res.json()
                 } else {
-                return res.text().then(error => Promise.reject(error));
+                    return res.text().then(error => Promise.reject(error));
                 }
             })
             .then(plantArray => {
                 this.collection ||= plantArray.map(attrs => new Plant(attrs));
+                // this.collection.map(plant => {plant.careEvents ||= []});
+                this.collection.map(plant => {CareEvent.allByPlant(plant)})
                 let renderedPlants = this.collection.map(plant => plant.render());
                 Page.leftContainer(".body").innerHTML = "";
                 Page.leftContainer(".header").innerText = "Plants";
@@ -262,6 +264,7 @@ class Plant {
     renderPlant() {
         Page.rightContainer().querySelector(".body").classList.remove("hidden");
         Page.formContainer().classList.add("hidden");
+        Page.rightContainer(".careEventBody").classList.add("hidden");
 
         Page.rightContainer(".title").textContent = this.name + " the " + this.species;
         Page.rightContainer(".location").textContent = this.location;
@@ -275,6 +278,7 @@ class Plant {
         let notes = Page.rightContainer().querySelectorAll(".newNote");
         notes.forEach((note) => {note.remove()})
         Note.allByPlantId(this.id);
+        CareEvent.allByPlantId(this.id);
     }
 
     render() {
@@ -303,17 +307,18 @@ class Plant {
 
 class CareEvent {
     constructor(attributes) {
-        let whitelist = ["id", "event_type", "due_date", "completed", "plant_id", "active"];
+        let whitelist = ["id", "event_type", "due_date", "completed", "plant_id", "active", "nextCareEventId"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
         if(this.active) { CareEvent.active = this; }
     }
 
     static findById(id) {
+        this.collection ||= [];
         return this.collection.find(careEvent => careEvent.id == id);
     }
 
-    static today() {
-        return fetch("http://localhost:3000/care_events/today", {
+    static allByPlant(plant) {
+        return fetch(`http://localhost:3000/plants/${plant.id}/care_events`, {
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
@@ -327,15 +332,53 @@ class CareEvent {
                 }
             })
             .then(careEventArray => {
-                // debugger
-                this.collection ||= careEventArray.map(attrs => new CareEvent(attrs));
-                let renderedCareEvents = this.collection.map(careEvent => careEvent.render());
-                Page.leftContainer(".body").innerHTML = "";
-                Page.leftContainer(".header").innerText = "Today's Care Events";
-                Page.leftContainer(".body").append(...renderedCareEvents);
-                return this.collection;
+                careEventArray ||= [];
+                plant.careEvents ||= careEventArray.map(attrs => new CareEvent(attrs));
+                plant.careEvents.forEach(event => {
+                    if (!CareEvent.findById(event)) {
+                        this.collection.push(event);
+                    }
+                })
+                // return plant.careEvents;
             })
     }
+
+    static today() {
+        let dueCareEvents = this.collection.filter(careEvent => {
+            return careEvent.due();
+        })
+        // debugger
+        let renderedCareEvents = dueCareEvents.map(careEvent => careEvent.render());
+        Page.leftContainer(".body").innerHTML = "";
+        Page.leftContainer(".header").innerText = "Today's Care Events";
+        Page.leftContainer(".body").append(...renderedCareEvents);
+        return dueCareEvents;
+    }
+
+    // static today() {
+    //     return fetch("http://localhost:3000/care_events/today", {
+    //         headers: {
+    //             "Accept": "application/json",
+    //             "Content-Type": "application/json"
+    //         }
+    //     })
+    //         .then(res => {
+    //             if(res.ok) {
+    //                 return res.json()
+    //             } else {
+    //                 return res.text().then(error => Promise.reject(error));
+    //             }
+    //         })
+    //         .then(careEventArray => {
+    //             // debugger
+    //             this.collection ||= careEventArray.map(attrs => new CareEvent(attrs));
+    //             let renderedCareEvents = this.collection.map(careEvent => careEvent.render());
+    //             Page.leftContainer(".body").innerHTML = "";
+    //             Page.leftContainer(".header").innerText = "Today's Care Events";
+    //             Page.leftContainer(".body").append(...renderedCareEvents);
+    //             return this.collection;
+    //         })
+    // }
 
     show() {
         this.toggleActive();
@@ -383,8 +426,8 @@ class CareEvent {
         return date;
     }
 
-    overdue() {
-        return Boolean(new Date(this.due_date).toLocaleDateString() < new Date().toLocaleDateString());
+    due() {
+        return Boolean(new Date(this.due_date).toLocaleDateString() <= new Date().toLocaleDateString());
     }
 
     render() { 
@@ -392,14 +435,24 @@ class CareEvent {
         this.element.classList.add(..."bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6".split(" "));
 
         this.eventNameLink ||= document.createElement('a');
-        this.eventNameLink.href = "#"
+        this.eventNameLink.href = `#${this.event_type}${this.plantName()}`
         this.eventNameLink.classList.add(..."text-sm font-medium text-gray-500 selectEvent".split(" "));
         if (this.completed == true) {
             this.eventNameLink.classList.add("line-through");
         } else if (this.completed == false) {
             this.eventNameLink.classList.remove("line-through");
         }
-        this.eventNameLink.textContent = `${this.event_type} ${this.plantName()}`;
+
+        let date = new Date(this.due_date).toLocaleDateString(
+            'en-us',
+            {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric'
+            }
+        );
+
+        this.eventNameLink.textContent = `${this.event_type} ${this.plantName()} (Due ${date})`;
         this.eventNameLink.dataset.careEventId = this.id;
 
         this.element.append(this.eventNameLink);
@@ -435,6 +488,87 @@ class CareEvent {
         Page.rightContainer(".careEventBody").querySelector(".watering_frequency").textContent = `${plant.watering_frequency} days`;
     }
 
+    static allByPlantId(plantId) {
+        let plant = Plant.findById(plantId);
+        // plant.noteCollection ||= noteArray.map(attrs => new Note(attrs));
+        plant.careEvents ||= [];
+        let renderedCareEvents = plant.careEvents.map(careEvent => careEvent.renderCareEventsByPlant());
+        Page.rightContainer(".careEventsContainer").querySelectorAll(".newCareEvent").forEach(event => event.remove());
+        Page.rightContainer(".careEventsContainer").append(...renderedCareEvents);
+
+        return plant.careEvents;
+    }
+
+    renderCareEventsByPlant() {
+        this.item ||= document.createElement('div');
+        this.item.classList.add(..."newCareEvent bg-gray-50 shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
+
+        let date = new Date(this.due_date).toLocaleDateString(
+            'en-us',
+            {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }
+        );
+
+        // this.date ||= document.createElement('div');
+        // this.date.classList.add(..."px-4 pt-5 pb-0 col-span-full".split(" "));
+        // this.date.textContent = date;
+
+        this.contentLink ||= document.createElement("a");
+        this.contentLink.href = `#${this.event_type}${this.plantName()}`;
+        
+        this.content ||= document.createElement("div");
+        this.content.classList.add(..."px-4 py-5 col-span-full selectEvent".split(" "));
+        if (this.completed == true) {
+            this.content.classList.add("line-through");
+        } else if (this.completed == false) {
+            this.content.classList.remove("line-through");
+        }
+        this.content.textContent = `${this.event_type} on ${date}`;
+        this.content.dataset.careEventId = this.id;
+        
+        this.contentLink.append(this.content);
+
+        // this.trashCanLink ||= document.createElement('a');
+        // this.trashCanLink.href = "#deleteCareEvent";
+        // this.trashCanLink.classList.add(..."my-4 p-2 text-right".split(" "));
+
+        // this.trashIcon ||= document.createElement('i');
+        // this.trashIcon.classList.add(..."fa p-2 fa-trash trashCareEvent".split(" "));
+        // this.trashIcon.dataset.careEventId = this.id;
+
+        // this.trashCanLink.append(this.trashIcon)
+
+        // this.checkMarkLink ||= document.createElement('a');
+        // this.checkMarkLink.href = "#complete";
+        // this.checkMarkLink.classList.add(..."my-4 p-2 text-right".split(" "));
+
+        // this.checkIcon ||= document.createElement('i');
+        // this.checkIcon.classList.add(..."fas p-2 fa-check completed".split(" "));
+        // this.checkIcon.dataset.careEventId = this.id;
+
+        // if (this.completed == true) {
+        //     this.checkIcon.classList.add("text-green-500");
+        // } else if (this.completed == false) {
+        //     this.checkIcon.classList.remove("text-green-500");            
+        // }
+
+
+        // this.checkMarkLink.append(this.checkIcon)
+
+        // this.contentBox ||= document.createElement('div');
+        // this.contentBox.classList.add(..."px-4 py-5 col-span-full".split(" "));
+        // this.contentBox.textContent = this.content;
+
+        // this.content.append(this.trashCanLink, this.checkMarkLink);
+
+        this.item.append(this.contentLink);
+
+        return this.item;
+    }
+
     plantName() {
         return Plant.collection.find(plant => plant["id"] == this.plant_id).name;
     }
@@ -460,6 +594,7 @@ class CareEvent {
                 Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.add("text-green-500");
 
                 this.render();
+                
                 return Plant.findById(this.plant_id)
             })
             .then(plant => {
@@ -468,6 +603,10 @@ class CareEvent {
             })
             .then(careEvent => {
                 Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.nextCareEventId = careEvent.id;
+                this.nextCareEventId = careEvent.id;
+                if (careEvent.due()) {
+                    Page.leftContainer(".body").append(careEvent.render());
+                }
                 console.log("next care event id is ", careEvent.id)
             })
     }
@@ -492,6 +631,10 @@ class CareEvent {
                 this.completed = json.completed;
                 Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.remove("text-green-500");
                 delete Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.nextCareEventId;
+                // let nextCareEvent = CareEvent.findById(this.nextCareEventId)
+                // console.log(nextCareEvent);
+                // debugger
+                Page.leftContainer(".body").querySelector(`[data-care-event-id='${this.nextCareEventId}']`).parentNode.remove();
                 this.render();
             })
     }
@@ -524,9 +667,9 @@ class Note {
         })
             .then(res => {
                 if(res.ok) {
-                return res.json()
+                    return res.json()
                 } else {
-                return res.text().then(error => Promise.reject(error));
+                    return res.text().then(error => Promise.reject(error));
                 }
             })
             .then(noteArray => {
@@ -534,6 +677,7 @@ class Note {
                 plant.noteCollection ||= noteArray.map(attrs => new Note(attrs));
 
                 console.log(noteArray)
+                console.log(plant.noteCollection)
                 let renderedNotes = plant.noteCollection.map(note => note.render());
                 Page.rightContainer(".notesContainer").append(...renderedNotes);
 
@@ -685,6 +829,7 @@ class FlashMessage {
 
     render() {
         this.container().textContent = this.message;
+        console.log(this)
         this.toggleDisplay();
         setTimeout(() => this.toggleDisplay(), 5000); 
     }
