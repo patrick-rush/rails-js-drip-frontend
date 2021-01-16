@@ -131,7 +131,7 @@ document.addEventListener('submit', function(e) {
         // let whitelist = ["id", "event_type", "due_date", "completed", "plant_id", "active", "nextCareEventId"];
         let formData = {
             "event_type" : "Water", 
-            "due_date" : date, 
+            "due_date" : new Date(date), 
             "plant_id" : Plant.active.id
         }
         CareEvent.create(formData)

@@ -145,7 +145,7 @@ class Plant {
                 this.collection.push(plant);
                 plant.renderPlant();
                 Page.leftContainer().append(plant.render());
-                CareEvent.create({plant_id: plant.id, event_type: "Water", due_date: new Date().toLocaleDateString()})
+                CareEvent.create({plant_id: plant.id, event_type: "Water", due_date: new Date().toDateString()})
                 new FlashMessage({type: 'success', message: 'New plant added successfully'});
             })
             .catch(error => {
@@ -482,13 +482,16 @@ class CareEvent {
                 this.collection ||= [];
                 let careEvent = new CareEvent(careEventAttributes);
                 this.collection.push(careEvent);
-                Plant.active.careEvents.push(careEvent);
+                console.log("care event plant id =", careEvent.plant_id)
+                Plant.findById(careEvent.plant_id).careEvents.push(careEvent);
+                // Plant.active.careEvents.push(careEvent);
                 let renderedCareEvent = careEvent.renderCareEventsByPlant();
                 let careEventsContainer = Page.rightContainer().querySelector('.careEventsContainer');
                 careEventsContainer.insertBefore(renderedCareEvent, careEventsContainer.children[1]);
                 
                 new FlashMessage({type: 'success', message: 'New care event added successfully'});
                 CareEvent.removeForm();
+                return careEvent;
             })
             .catch(error => {
                 new FlashMessage({type: 'error', message: error});
@@ -497,12 +500,14 @@ class CareEvent {
 
     static removeForm() {
         let form = Page.rightContainer(".careEventsContainer").querySelector('form');
-        form.reset();
-        form.remove();
-        
-        let icon = Page.rightContainer().querySelector(".careEventsContainer").querySelector('.removeCareEventForm');
-        icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
-        icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
+            if (form) {
+                form.reset();
+                form.remove();
+                
+                let icon = Page.rightContainer().querySelector(".careEventsContainer").querySelector('.removeCareEventForm');
+                icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
+                icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
+            }
     }
 
     destroy() {
@@ -512,19 +517,20 @@ class CareEvent {
             method: 'DELETE'
         })
             .then(json => {
-                CareEvent.active.element ? this.element.remove() : null;
+                CareEvent.active.element ? CareEvent.active.element.remove() : null;
                 // this.item ? this.item.remove() : null;
                 // CareEvent.active.item.remove();
                 let index = CareEvent.collection.findIndex(careEvent => careEvent.id == json.id);
                 CareEvent.collection.splice(index, 1);
-                let otherIndex = Plant.active.careEvents.findIndex(careEvent => careEvent.id == json.id);
-                Plant.active.careEvents.splice(otherIndex, 1);
+                let plant = Plant.findById(CareEvent.active.plant_id);
+                let otherIndex = plant.careEvents.findIndex(careEvent => careEvent.id == json.id);
+                plant.careEvents.splice(otherIndex, 1);
                 // this.element.remove();
                 // Page.rightContainer().querySelector(`[data-care-event-id='${this.id}']`).remove();
                 // Page.rightContainer().querySelector(`[data-care-event-id='${this.id}']`).parentElement.parentElement.remove();
                 new FlashMessage({type: 'success', message: 'Care event successfully deleted'});
                 // Page.showWelcome();
-                Plant.active.show();
+                // plant.show();
             })
             .catch(error => {
                 new FlashMessage({type: 'error', message: error});
@@ -550,12 +556,13 @@ class CareEvent {
 
     static calculateDate(frequency) {
         let date = new Date();
+        console.log(date)
         date.setDate(date.getDate() + frequency);
         return date;
     }
 
     due() {
-        return new Date(this.due_date).toLocaleDateString() >= new Date().toLocaleDateString();
+        return new Date(`${this.due_date} 00:00`).toDateString() <= new Date().toDateString();
     }
 
     render() { 
@@ -571,7 +578,7 @@ class CareEvent {
             this.eventNameLink.classList.remove("line-through");
         }
 
-        let date = new Date(this.due_date).toLocaleDateString(
+        let date = new Date(`${this.due_date} 00:00`).toDateString(
             'en-us',
             {
               year: 'numeric',
@@ -603,7 +610,7 @@ class CareEvent {
             Page.rightContainer(".careEventBody").querySelector(".completed").classList.remove("text-green-500");            
         }
 
-        let date = new Date(this.due_date).toLocaleDateString(
+        let date = new Date(`${this.due_date} 00:00`).toDateString(
             'en-us',
             {
               year: 'numeric',
@@ -633,7 +640,7 @@ class CareEvent {
         this.item ||= document.createElement('div');
         this.item.classList.add(..."newCareEvent bg-gray-50 shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
 
-        let date = new Date(this.due_date).toLocaleDateString(
+        let date = new Date(`${this.due_date} 00:00`).toDateString(
             'en-us',
             {
               year: 'numeric',
@@ -729,14 +736,21 @@ class CareEvent {
             })
             .then(plant => {
                 // "id", "event_type", "due_date", "completed", "plant_id", "active"
-                return CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
+                let careEvent = CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
+                
+                console.log("this is care event on line 737", careEvent)
+                // return new CareEvent({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
+                return careEvent
             })
             .then(careEvent => {
+                // careEvent.create();
+                console.log("this is care event in mark complete", careEvent)
                 Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.nextCareEventId = careEvent.id;
                 this.nextCareEventId = careEvent.id;
                 if (careEvent.due()) {
                     Page.leftContainer(".body").append(careEvent.render());
                 }
+                // Plant.active.careEvents.push(careEvent);
                 console.log("next care event id is ", careEvent.id)
             })
     }
@@ -761,10 +775,12 @@ class CareEvent {
                 this.completed = json.completed;
                 Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.remove("text-green-500");
                 delete Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.nextCareEventId;
+                
+                this.nextCareEventId = null;
                 // let nextCareEvent = CareEvent.findById(this.nextCareEventId)
                 // console.log(nextCareEvent);
                 // debugger
-                Page.leftContainer(".body").querySelector(`[data-care-event-id='${this.nextCareEventId}']`).parentNode.remove();
+                // Page.leftContainer(".body").querySelector(`[data-care-event-id='${this.nextCareEventId}']`).parentNode.remove();
                 this.render();
             })
     }
@@ -911,7 +927,7 @@ class Note {
         this.element ||= document.createElement('div');
         this.element.classList.add(..."newNote bg-white shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
 
-        let date = new Date(this.created_at).toLocaleDateString(
+        let date = new Date(this.created_at).toDateString(
             'en-us',
             {
               year: 'numeric',
@@ -919,7 +935,7 @@ class Note {
               day: 'numeric'
             }
         );
-
+            console.log(date)
         this.date ||= document.createElement('div');
         this.date.classList.add(..."px-4 pt-5 pb-0 col-span-full".split(" "));
         this.date.textContent = date;
