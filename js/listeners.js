@@ -83,6 +83,11 @@ document.addEventListener('click', function(e) {
     } else if (target.matches('.addCareEventIcon')) {
         console.log('clicked add care event icon', target.dataset.plantId);
         CareEvent.new();
+    } else if (target.matches('.deleteCareEvent')) {
+        console.log("Got to delete care event")
+        let careEvent = CareEvent.findById(CareEvent.active.id);
+        careEvent.destroy();
+
     }
     // else if (target.matches('.selectCareEvent')) {
     //     let careEvent = CareEvent.findById(target.dataset.careEventId);

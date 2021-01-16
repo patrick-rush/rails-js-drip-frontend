@@ -283,6 +283,8 @@ class Plant {
         let notes = Page.rightContainer().querySelectorAll(".newNote");
         notes.forEach((note) => {note.remove()})
         Note.allByPlantId(this.id);
+        let careEvents = Page.rightContainer().querySelectorAll("newCareEvent");
+        careEvents.forEach((careEvent) => {careEvent.remove()});
         CareEvent.allByPlantId(this.id);
     }
 
@@ -480,6 +482,7 @@ class CareEvent {
                 this.collection ||= [];
                 let careEvent = new CareEvent(careEventAttributes);
                 this.collection.push(careEvent);
+                Plant.active.careEvents.push(careEvent);
                 let renderedCareEvent = careEvent.renderCareEventsByPlant();
                 let careEventsContainer = Page.rightContainer().querySelector('.careEventsContainer');
                 careEventsContainer.insertBefore(renderedCareEvent, careEventsContainer.children[1]);
@@ -493,22 +496,56 @@ class CareEvent {
     }
 
     static removeForm() {
-        Page.rightContainer(".careEventsContainer").querySelector('form').remove();
+        let form = Page.rightContainer(".careEventsContainer").querySelector('form');
+        form.reset();
+        form.remove();
         
-        let icon = document.querySelector(".careEventsContainer").querySelector('.removeForm');
-        icon.classList.remove(..."fa fa-minus removeForm".split(" "));
+        let icon = Page.rightContainer().querySelector(".careEventsContainer").querySelector('.removeCareEventForm');
+        icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
         icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
     }
 
     destroy() {
         console.log(this)
+        
         return fetch(`http://localhost:3000/care_events/${this.id}`, {
             method: 'DELETE'
         })
             .then(json => {
+                CareEvent.active.element ? this.element.remove() : null;
+                // this.item ? this.item.remove() : null;
+                // CareEvent.active.item.remove();
                 let index = CareEvent.collection.findIndex(careEvent => careEvent.id == json.id);
                 CareEvent.collection.splice(index, 1);
+                let otherIndex = Plant.active.careEvents.findIndex(careEvent => careEvent.id == json.id);
+                Plant.active.careEvents.splice(otherIndex, 1);
+                // this.element.remove();
+                // Page.rightContainer().querySelector(`[data-care-event-id='${this.id}']`).remove();
+                // Page.rightContainer().querySelector(`[data-care-event-id='${this.id}']`).parentElement.parentElement.remove();
+                new FlashMessage({type: 'success', message: 'Care event successfully deleted'});
+                // Page.showWelcome();
+                Plant.active.show();
             })
+            .catch(error => {
+                new FlashMessage({type: 'error', message: error});
+            })
+
+
+
+            // let proceed = confirm("Are you sure you want to delete this plant?");
+            // if(proceed) {
+            //     return fetch(`http://localhost:3000/plants/${this.id}`, {
+            //         method: 'DELETE'
+            //     })
+            //         .then(json => {
+            //             let index = Plant.collection.findIndex(plant => plant.id == json.id);
+            //             Plant.collection.splice(index, 1);
+            //             this.element.remove();
+            //             new FlashMessage({type: 'success', message: 'Plant successfully deleted'})
+            //             Page.showWelcome();
+            //         })
+            // }
+    
     }
 
     static calculateDate(frequency) {
@@ -518,7 +555,7 @@ class CareEvent {
     }
 
     due() {
-        return Boolean(new Date(this.due_date).toLocaleDateString() <= new Date().toLocaleDateString());
+        return new Date(this.due_date).toLocaleDateString() >= new Date().toLocaleDateString();
     }
 
     render() { 
@@ -583,7 +620,9 @@ class CareEvent {
         let plant = Plant.findById(plantId);
         // plant.noteCollection ||= noteArray.map(attrs => new Note(attrs));
         plant.careEvents ||= [];
+        console.log(plant.careEvents);
         let renderedCareEvents = plant.careEvents.map(careEvent => careEvent.renderCareEventsByPlant());
+
         Page.rightContainer(".careEventsContainer").querySelectorAll(".newCareEvent").forEach(event => event.remove());
         Page.rightContainer(".careEventsContainer").append(...renderedCareEvents);
 
@@ -767,8 +806,8 @@ class Note {
                 let plant = Plant.findById(plantId);
                 plant.noteCollection ||= noteArray.map(attrs => new Note(attrs));
 
-                console.log(noteArray)
-                console.log(plant.noteCollection)
+                // console.log(noteArray)
+                // console.log(plant.noteCollection)
                 let renderedNotes = plant.noteCollection.map(note => note.render());
                 Page.rightContainer(".notesContainer").append(...renderedNotes);
 
