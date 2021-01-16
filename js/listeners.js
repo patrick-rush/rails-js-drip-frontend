@@ -120,6 +120,16 @@ document.addEventListener('submit', function(e) {
             "plant_id" : Plant.active.id
         };
         Note.create(formData);
+    } else if (target.matches('.newCareEvent')) {
+        let date = target.querySelector('input').value;
+        console.log("got to .newCareEvent submit", date);
+        // let whitelist = ["id", "event_type", "due_date", "completed", "plant_id", "active", "nextCareEventId"];
+        let formData = {
+            "event_type" : "Water", 
+            "due_date" : date, 
+            "plant_id" : Plant.active.id
+        }
+        CareEvent.create(formData)
     }
 })
 

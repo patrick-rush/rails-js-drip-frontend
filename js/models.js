@@ -396,7 +396,7 @@ class CareEvent {
         icon.classList.add(..."fa fa-minus removeCareEventForm".split(" "));
 
         this.form ||= document.createElement('form');
-        this.form.classList.add(..."newNote bg-grey-50 shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
+        this.form.classList.add(..."newCareEvent bg-grey-50 shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
 
         this.contentBox ||= document.createElement('div');
         this.contentBox.classList.add(..."col-span-6 sm:col-span-3".split(" "));
@@ -423,7 +423,7 @@ class CareEvent {
         this.input.type = "date";
         this.input.name = "due_date";
         this.input.id = "due_date"
-        this.input.classList.add(..."dueDate px-4 pb-4 mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-green-100 rounded-md".split(" "));
+        this.input.classList.add(..."dueDate px-4 py-4 mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-green-100 rounded-md".split(" "));
 
         this.dueDate.append(this.label, this.input);
 
@@ -480,8 +480,24 @@ class CareEvent {
                 this.collection ||= [];
                 let careEvent = new CareEvent(careEventAttributes);
                 this.collection.push(careEvent);
-                return careEvent;
+                let renderedCareEvent = careEvent.renderCareEventsByPlant();
+                let careEventsContainer = Page.rightContainer().querySelector('.careEventsContainer');
+                careEventsContainer.insertBefore(renderedCareEvent, careEventsContainer.children[1]);
+                
+                new FlashMessage({type: 'success', message: 'New care event added successfully'});
+                CareEvent.removeForm();
             })
+            .catch(error => {
+                new FlashMessage({type: 'error', message: error});
+            })
+    }
+
+    static removeForm() {
+        Page.rightContainer(".careEventsContainer").querySelector('form').remove();
+        
+        let icon = document.querySelector(".careEventsContainer").querySelector('.removeForm');
+        icon.classList.remove(..."fa fa-minus removeForm".split(" "));
+        icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
     }
 
     destroy() {
