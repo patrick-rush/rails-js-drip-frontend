@@ -273,7 +273,12 @@ class Plant {
         Page.rightContainer(".watering_frequency").textContent = this.watering_frequency + " days";
         Page.rightContainer(".increaseDays").dataset.plantId = this.id;
         Page.rightContainer(".decreaseDays").dataset.plantId = this.id;
-        Page.rightContainer(".addNoteIcon").dataset.plantId = this.id;
+        if (Page.rightContainer(".addNoteIcon")) {
+            Page.rightContainer(".addNoteIcon").dataset.plantId = this.id;
+        }
+        if (Page.rightContainer(".addCareEventIcon")) {
+            Page.rightContainer(".addCareEventIcon").dataset.plantId = this.id;
+        }
         
         let notes = Page.rightContainer().querySelectorAll(".newNote");
         notes.forEach((note) => {note.remove()})
@@ -383,6 +388,76 @@ class CareEvent {
     show() {
         this.toggleActive();
         this.renderCareEvent();
+    }
+
+    static new() {
+        let icon = document.querySelector(".careEventsContainer").querySelector('.addCareEventIcon');
+        icon.classList.remove(..."fa fa-plus addCareEventIcon".split(" "));
+        icon.classList.add(..."fa fa-minus removeCareEventForm".split(" "));
+
+        this.form ||= document.createElement('form');
+        this.form.classList.add(..."newNote bg-grey-50 shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
+
+        this.contentBox ||= document.createElement('div');
+        this.contentBox.classList.add(..."col-span-6 sm:col-span-3".split(" "));
+
+
+        // this.textarea ||= document.createElement('textarea');
+        // this.textarea.name = "content";
+        // this.textarea.classList.add(..."p-2 location mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md".split(" "));
+    
+        // <div class="col-span-6 sm:col-span-3">
+        // <label for="name" class="block text-sm font-medium text-green-700">Name</label>
+        // <input type="text" name="name" id="name" class="name mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-green-100 rounded-md">
+        // </div>
+
+        this.dueDate ||= document.createElement('div');
+        this.dueDate.classList.add(..."col-span-6 sm:col-span-3".split(" "));
+
+        this.label ||= document.createElement('label');
+        this.label.setAttribute("for", "due_date");
+        this.label.classList.add(..."block p-4 text-sm font-medium text-green-700".split(" "));
+        this.label.innerText = `Choose a date to water ${Plant.active.name}:`;
+
+        this.input ||= document.createElement("input");
+        this.input.type = "date";
+        this.input.name = "due_date";
+        this.input.id = "due_date"
+        this.input.classList.add(..."dueDate px-4 pb-4 mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-green-100 rounded-md".split(" "));
+
+        this.dueDate.append(this.label, this.input);
+
+        this.contentBox.append(this.dueDate); // this.contentBox.append(this.label, this.textarea);
+
+        this.buttonContainer ||= document.createElement("div");
+        this.buttonContainer.classList.add(..."px-4 py-3 bg-gray-50 text-right sm:px-6".split(" "));
+
+        this.submitButton ||= document.createElement("button");
+        this.submitButton.setAttribute("type", "submit");
+        this.submitButton.id = "submitCareEvent"
+        this.submitButton.classList.add(..."inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500".split(" "));
+        this.submitButton.innerText = "Create New Care Event";
+        
+        this.buttonContainer.append(this.submitButton);
+
+        this.form.append(this.contentBox, this.buttonContainer);
+
+        let careEventsContainer = Page.rightContainer(".careEventsContainer");
+        careEventsContainer.insertBefore(this.form, careEventsContainer.children[1]);
+
+        return this.form
+    }
+
+    //
+    // START HERE NEED TO CREATE METHOD TO SAVE NEW EVENT WHEN YOU HIT SUBMIT
+    //
+
+    static removeForm() {
+        Page.rightContainer(".careEventsContainer").querySelector('form').remove();
+        
+        let icon = document.querySelector(".careEventsContainer").querySelector('.removeCareEventForm');
+        icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
+        icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
     }
 
     static create(attrs) {

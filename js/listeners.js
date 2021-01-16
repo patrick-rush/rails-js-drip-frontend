@@ -75,10 +75,15 @@ document.addEventListener('click', function(e) {
         Note.new();
     } else if (target.matches('.removeForm')) {
         Note.removeForm();
+    } else if (target.matches('.removeCareEventForm')) {
+        CareEvent.removeForm(); // NEED TO ADD THIS METHOD
     } else if (target.matches('.trashNote')) {
         let note = Note.findById(target.dataset.noteId);
         note.destroy(target.dataset.noteId);
-    } 
+    } else if (target.matches('.addCareEventIcon')) {
+        console.log('clicked add care event icon', target.dataset.plantId);
+        CareEvent.new();
+    }
     // else if (target.matches('.selectCareEvent')) {
     //     let careEvent = CareEvent.findById(target.dataset.careEventId);
 
