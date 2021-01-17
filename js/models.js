@@ -351,6 +351,7 @@ class CareEvent {
     }
 
     static today() {
+        this.collection ||= [];
         let dueCareEvents = this.collection.filter(careEvent => {
             return careEvent.due();
         })
@@ -604,6 +605,7 @@ class CareEvent {
         Page.rightContainer(".careEventBody").querySelector(".increaseDays").dataset.plantId = plant.id;
         Page.rightContainer(".careEventBody").querySelector(".decreaseDays").dataset.plantId = plant.id;
         Page.rightContainer(".careEventBody").querySelector(".completed").dataset.careEventId = this.id;
+        Page.rightContainer(".careEventBody").querySelector(".deleteCareEvent").dataset.careEventId = this.id;
         if (this.completed == true) {
             Page.rightContainer(".careEventBody").querySelector(".completed").classList.add("text-green-500");
         } else if (this.completed == false) {

@@ -85,8 +85,9 @@ document.addEventListener('click', function(e) {
         CareEvent.new();
     } else if (target.matches('.deleteCareEvent')) {
         console.log("Got to delete care event")
-        let careEvent = CareEvent.findById(CareEvent.active.id);
+        let careEvent = CareEvent.findById(target.dataset.careEventId);
         careEvent.destroy();
+        Page.showWelcome();
 
     }
     // else if (target.matches('.selectCareEvent')) {
