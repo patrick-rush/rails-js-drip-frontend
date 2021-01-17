@@ -144,7 +144,13 @@ class Plant {
                 let plant = new Plant(plantAttributes);
                 this.collection.push(plant);
                 plant.renderPlant();
-                Page.leftContainer().append(plant.render());
+                Page.setFocus(".showPlants");
+                let renderedPlants = this.collection.map(plant => plant.render());
+                Page.leftContainer(".body").innerHTML = "";
+                Page.leftContainer(".header").innerText = "Plants";
+                Page.leftContainer(".body").append(...renderedPlants);
+
+                // Page.leftContainer().append(plant.render());
                 CareEvent.create({plant_id: plant.id, event_type: "Water", due_date: new Date().toDateString()})
                 new FlashMessage({type: 'success', message: 'New plant added successfully'});
             })
