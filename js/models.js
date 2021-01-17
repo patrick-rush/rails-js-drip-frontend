@@ -35,9 +35,9 @@ class Page {
     }
 
     static showWelcome() {
-        Page.rightContainer().querySelector(".title").innerHTML = "<br>";
-        Page.rightContainer().querySelector(".body").classList.add("hidden");
-        Page.rightContainer().querySelector(".careEventBody").classList.add("hidden");
+        Page.rightContainer(".title").innerHTML = "<br>";
+        Page.rightContainer(".body").classList.add("hidden");
+        Page.rightContainer(".careEventBody").classList.add("hidden");
         Page.welcome().style.display = "block";
         Page.formContainer().classList.add("hidden");
     }
@@ -96,7 +96,6 @@ class Plant {
             })
             .then(plantArray => {
                 this.collection ||= plantArray.map(attrs => new Plant(attrs));
-                // this.collection.map(plant => {plant.careEvents ||= []});
                 this.collection.map(plant => {CareEvent.allByPlant(plant)})
                 let renderedPlants = this.collection.map(plant => plant.render());
                 Page.leftContainer(".body").innerHTML = "";
@@ -150,7 +149,6 @@ class Plant {
                 Page.leftContainer(".header").innerText = "Plants";
                 Page.leftContainer(".body").append(...renderedPlants);
 
-                // Page.leftContainer().append(plant.render());
                 CareEvent.create({plant_id: plant.id, event_type: "Water", due_date: new Date().toDateString()})
                 new FlashMessage({type: 'success', message: 'New plant added successfully'});
             })
@@ -233,13 +231,10 @@ class Plant {
     }
 
     changeDays(plusOrMinus) {
-        // let days = this.watering_frequency.split(" ")[0]
         if (plusOrMinus === "+") {
-            // let newWateringFrequency = parseInt(days) + 1 + " days";
             let newWateringFrequency = this.watering_frequency + 1;
             this.watering_frequency = newWateringFrequency;
         } else if (plusOrMinus === "-") {
-            // let newWateringFrequency = parseInt(days) - 1 + " days";
             let newWateringFrequency = this.watering_frequency - 1;
             this.watering_frequency = newWateringFrequency;
         }
@@ -268,7 +263,7 @@ class Plant {
     }
 
     renderPlant() {
-        Page.rightContainer().querySelector(".body").classList.remove("hidden");
+        Page.rightContainer(".body").classList.remove("hidden");
         Page.formContainer().classList.add("hidden");
         Page.rightContainer(".careEventBody").classList.add("hidden");
 
@@ -280,10 +275,18 @@ class Plant {
         Page.rightContainer(".increaseDays").dataset.plantId = this.id;
         Page.rightContainer(".decreaseDays").dataset.plantId = this.id;
         if (Page.rightContainer(".addNoteIcon")) {
-            Page.rightContainer(".addNoteIcon").dataset.plantId = this.id;
+            Page.rightContainer(".addNoteIcon").dataset.plantId = this.id;            
+        } else {
+            let icon = Page.rightContainer(".removeForm");
+            icon.classList.remove(..."fa fa-minus removeForm".split(" "));
+            icon.classList.add(..."fa fa-plus addNoteIcon".split(" "));
         }
         if (Page.rightContainer(".addCareEventIcon")) {
             Page.rightContainer(".addCareEventIcon").dataset.plantId = this.id;
+        } else {
+            let icon = Page.rightContainer(".removeCareEventForm");
+            icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
+            icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
         }
         
         let notes = Page.rightContainer().querySelectorAll(".newNote");
@@ -352,7 +355,6 @@ class CareEvent {
                         this.collection.push(event);
                     }
                 })
-                // return plant.careEvents;
             })
     }
 
@@ -361,38 +363,12 @@ class CareEvent {
         let dueCareEvents = this.collection.filter(careEvent => {
             return careEvent.due();
         })
-        // debugger
         let renderedCareEvents = dueCareEvents.map(careEvent => careEvent.render());
         Page.leftContainer(".body").innerHTML = "";
         Page.leftContainer(".header").innerText = "Today's Care Events";
         Page.leftContainer(".body").append(...renderedCareEvents);
         return dueCareEvents;
     }
-
-    // static today() {
-    //     return fetch("http://localhost:3000/care_events/today", {
-    //         headers: {
-    //             "Accept": "application/json",
-    //             "Content-Type": "application/json"
-    //         }
-    //     })
-    //         .then(res => {
-    //             if(res.ok) {
-    //                 return res.json()
-    //             } else {
-    //                 return res.text().then(error => Promise.reject(error));
-    //             }
-    //         })
-    //         .then(careEventArray => {
-    //             // debugger
-    //             this.collection ||= careEventArray.map(attrs => new CareEvent(attrs));
-    //             let renderedCareEvents = this.collection.map(careEvent => careEvent.render());
-    //             Page.leftContainer(".body").innerHTML = "";
-    //             Page.leftContainer(".header").innerText = "Today's Care Events";
-    //             Page.leftContainer(".body").append(...renderedCareEvents);
-    //             return this.collection;
-    //         })
-    // }
 
     show() {
         this.toggleActive();
@@ -410,16 +386,6 @@ class CareEvent {
         this.contentBox ||= document.createElement('div');
         this.contentBox.classList.add(..."col-span-6 sm:col-span-3".split(" "));
 
-
-        // this.textarea ||= document.createElement('textarea');
-        // this.textarea.name = "content";
-        // this.textarea.classList.add(..."p-2 location mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md".split(" "));
-    
-        // <div class="col-span-6 sm:col-span-3">
-        // <label for="name" class="block text-sm font-medium text-green-700">Name</label>
-        // <input type="text" name="name" id="name" class="name mt-1 focus:ring-green-500 focus:border-green-500 block w-full shadow-sm sm:text-sm border-green-100 rounded-md">
-        // </div>
-
         this.dueDate ||= document.createElement('div');
         this.dueDate.classList.add(..."col-span-6 sm:col-span-3".split(" "));
 
@@ -436,7 +402,7 @@ class CareEvent {
 
         this.dueDate.append(this.label, this.input);
 
-        this.contentBox.append(this.dueDate); // this.contentBox.append(this.label, this.textarea);
+        this.contentBox.append(this.dueDate); 
 
         this.buttonContainer ||= document.createElement("div");
         this.buttonContainer.classList.add(..."px-4 py-3 bg-gray-50 text-right sm:px-6".split(" "));
@@ -457,17 +423,6 @@ class CareEvent {
         return this.form
     }
 
-    //
-    // START HERE NEED TO CREATE METHOD TO SAVE NEW EVENT WHEN YOU HIT SUBMIT
-    //
-
-    static removeForm() {
-        Page.rightContainer(".careEventsContainer").querySelector('form').remove();
-        
-        let icon = document.querySelector(".careEventsContainer").querySelector('.removeCareEventForm');
-        icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
-        icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
-    }
 
     static create(attrs) {
         return fetch("http://localhost:3000/care_events", {
@@ -489,11 +444,9 @@ class CareEvent {
                 this.collection ||= [];
                 let careEvent = new CareEvent(careEventAttributes);
                 this.collection.push(careEvent);
-                console.log("care event plant id =", careEvent.plant_id)
                 Plant.findById(careEvent.plant_id).careEvents.push(careEvent);
-                // Plant.active.careEvents.push(careEvent);
                 let renderedCareEvent = careEvent.renderCareEventsByPlant();
-                let careEventsContainer = Page.rightContainer().querySelector('.careEventsContainer');
+                let careEventsContainer = Page.rightContainer('.careEventsContainer');
                 careEventsContainer.insertBefore(renderedCareEvent, careEventsContainer.children[1]);
                 
                 new FlashMessage({type: 'success', message: 'New care event added successfully'});
@@ -505,65 +458,102 @@ class CareEvent {
             })
     }
 
+    destroy() {
+        return fetch(`http://localhost:3000/care_events/${this.id}`, {
+            method: 'DELETE'
+        })
+            .then(json => {
+                CareEvent.active.element ? CareEvent.active.element.remove() : null;
+                let index = CareEvent.collection.findIndex(careEvent => careEvent.id == json.id);
+                CareEvent.collection.splice(index, 1);
+                let plant = Plant.findById(CareEvent.active.plant_id);
+                let otherIndex = plant.careEvents.findIndex(careEvent => careEvent.id == json.id);
+                plant.careEvents.splice(otherIndex, 1);
+                new FlashMessage({type: 'success', message: 'Care event successfully deleted'});
+            })
+            .catch(error => {
+                new FlashMessage({type: 'error', message: error});
+            })    
+    }
+
+    markCompleted() {
+        return fetch(`http://localhost:3000/care_events/${this.id}`, {
+            method: "PATCH",
+            headers: {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({care_event: {completed: true}})
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(json => {
+                this.completed = json.completed;
+                Page.rightContainer(".careEventBody").querySelector(".completed").classList.add("text-green-500");
+
+                this.render();
+                
+                return Plant.findById(this.plant_id)
+            })
+            .then(plant => {
+                let careEvent = CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
+                
+                return careEvent
+            })
+            .then(careEvent => {
+                Page.rightContainer(".careEventBody").querySelector(".completed").dataset.nextCareEventId = careEvent.id;
+                this.nextCareEventId = careEvent.id;
+                if (careEvent.due()) {
+                    Page.leftContainer(".body").append(careEvent.render());
+                }
+            })
+    }
+
+    markNotCompleted() {
+        return fetch(`http://localhost:3000/care_events/${this.id}`, {
+            method: "PATCH",
+            headers: {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({care_event: {completed: false}})
+        })
+            .then(res => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    return res.text().then(error => Promise.reject(error));
+                }
+            })
+            .then(json => {
+                this.completed = json.completed;
+                Page.rightContainer(".careEventBody").querySelector(".completed").classList.remove("text-green-500");
+                delete Page.rightContainer(".careEventBody").querySelector(".completed").dataset.nextCareEventId;
+                
+                this.nextCareEventId = null;
+                this.render();
+            })
+    }
+
     static removeForm() {
         let form = Page.rightContainer(".careEventsContainer").querySelector('form');
             if (form) {
                 form.reset();
                 form.remove();
                 
-                let icon = Page.rightContainer().querySelector(".careEventsContainer").querySelector('.removeCareEventForm');
+                let icon = Page.rightContainer(".careEventsContainer").querySelector('.removeCareEventForm');
                 icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
                 icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
             }
     }
 
-    destroy() {
-        console.log(this)
-        
-        return fetch(`http://localhost:3000/care_events/${this.id}`, {
-            method: 'DELETE'
-        })
-            .then(json => {
-                CareEvent.active.element ? CareEvent.active.element.remove() : null;
-                // this.item ? this.item.remove() : null;
-                // CareEvent.active.item.remove();
-                let index = CareEvent.collection.findIndex(careEvent => careEvent.id == json.id);
-                CareEvent.collection.splice(index, 1);
-                let plant = Plant.findById(CareEvent.active.plant_id);
-                let otherIndex = plant.careEvents.findIndex(careEvent => careEvent.id == json.id);
-                plant.careEvents.splice(otherIndex, 1);
-                // this.element.remove();
-                // Page.rightContainer().querySelector(`[data-care-event-id='${this.id}']`).remove();
-                // Page.rightContainer().querySelector(`[data-care-event-id='${this.id}']`).parentElement.parentElement.remove();
-                new FlashMessage({type: 'success', message: 'Care event successfully deleted'});
-                // Page.showWelcome();
-                // plant.show();
-            })
-            .catch(error => {
-                new FlashMessage({type: 'error', message: error});
-            })
-
-
-
-            // let proceed = confirm("Are you sure you want to delete this plant?");
-            // if(proceed) {
-            //     return fetch(`http://localhost:3000/plants/${this.id}`, {
-            //         method: 'DELETE'
-            //     })
-            //         .then(json => {
-            //             let index = Plant.collection.findIndex(plant => plant.id == json.id);
-            //             Plant.collection.splice(index, 1);
-            //             this.element.remove();
-            //             new FlashMessage({type: 'success', message: 'Plant successfully deleted'})
-            //             Page.showWelcome();
-            //         })
-            // }
-    
-    }
-
     static calculateDate(frequency) {
         let date = new Date();
-        console.log(date)
         date.setDate(date.getDate() + frequency);
         return date;
     }
@@ -633,9 +623,7 @@ class CareEvent {
 
     static allByPlantId(plantId) {
         let plant = Plant.findById(plantId);
-        // plant.noteCollection ||= noteArray.map(attrs => new Note(attrs));
         plant.careEvents ||= [];
-        console.log(plant.careEvents);
         let renderedCareEvents = plant.careEvents.map(careEvent => careEvent.renderCareEventsByPlant());
 
         Page.rightContainer(".careEventsContainer").querySelectorAll(".newCareEvent").forEach(event => event.remove());
@@ -657,10 +645,6 @@ class CareEvent {
             }
         );
 
-        // this.date ||= document.createElement('div');
-        // this.date.classList.add(..."px-4 pt-5 pb-0 col-span-full".split(" "));
-        // this.date.textContent = date;
-
         this.contentLink ||= document.createElement("a");
         this.contentLink.href = `#${this.event_type}${this.plantName()}`;
         
@@ -675,40 +659,6 @@ class CareEvent {
         this.content.dataset.careEventId = this.id;
         
         this.contentLink.append(this.content);
-
-        // this.trashCanLink ||= document.createElement('a');
-        // this.trashCanLink.href = "#deleteCareEvent";
-        // this.trashCanLink.classList.add(..."my-4 p-2 text-right".split(" "));
-
-        // this.trashIcon ||= document.createElement('i');
-        // this.trashIcon.classList.add(..."fa p-2 fa-trash trashCareEvent".split(" "));
-        // this.trashIcon.dataset.careEventId = this.id;
-
-        // this.trashCanLink.append(this.trashIcon)
-
-        // this.checkMarkLink ||= document.createElement('a');
-        // this.checkMarkLink.href = "#complete";
-        // this.checkMarkLink.classList.add(..."my-4 p-2 text-right".split(" "));
-
-        // this.checkIcon ||= document.createElement('i');
-        // this.checkIcon.classList.add(..."fas p-2 fa-check completed".split(" "));
-        // this.checkIcon.dataset.careEventId = this.id;
-
-        // if (this.completed == true) {
-        //     this.checkIcon.classList.add("text-green-500");
-        // } else if (this.completed == false) {
-        //     this.checkIcon.classList.remove("text-green-500");            
-        // }
-
-
-        // this.checkMarkLink.append(this.checkIcon)
-
-        // this.contentBox ||= document.createElement('div');
-        // this.contentBox.classList.add(..."px-4 py-5 col-span-full".split(" "));
-        // this.contentBox.textContent = this.content;
-
-        // this.content.append(this.trashCanLink, this.checkMarkLink);
-
         this.item.append(this.contentLink);
 
         return this.item;
@@ -716,81 +666,6 @@ class CareEvent {
 
     plantName() {
         return Plant.collection.find(plant => plant["id"] == this.plant_id).name;
-    }
-
-    markCompleted() {
-        return fetch(`http://localhost:3000/care_events/${this.id}`, {
-            method: "PATCH",
-            headers: {
-                "Accept" : "application/json",
-                "Content-Type" : "application/json"
-            },
-            body: JSON.stringify({care_event: {completed: true}})
-        })
-            .then(res => {
-                if(res.ok) {
-                    return res.json();
-                } else {
-                    return res.text().then(error => Promise.reject(error));
-                }
-            })
-            .then(json => {
-                this.completed = json.completed;
-                Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.add("text-green-500");
-
-                this.render();
-                
-                return Plant.findById(this.plant_id)
-            })
-            .then(plant => {
-                // "id", "event_type", "due_date", "completed", "plant_id", "active"
-                let careEvent = CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
-                
-                console.log("this is care event on line 737", careEvent)
-                // return new CareEvent({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
-                return careEvent
-            })
-            .then(careEvent => {
-                // careEvent.create();
-                console.log("this is care event in mark complete", careEvent)
-                Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.nextCareEventId = careEvent.id;
-                this.nextCareEventId = careEvent.id;
-                if (careEvent.due()) {
-                    Page.leftContainer(".body").append(careEvent.render());
-                }
-                // Plant.active.careEvents.push(careEvent);
-                console.log("next care event id is ", careEvent.id)
-            })
-    }
-
-    markNotCompleted() {
-        return fetch(`http://localhost:3000/care_events/${this.id}`, {
-            method: "PATCH",
-            headers: {
-                "Accept" : "application/json",
-                "Content-Type" : "application/json"
-            },
-            body: JSON.stringify({care_event: {completed: false}})
-        })
-            .then(res => {
-                if(res.ok) {
-                    return res.json();
-                } else {
-                    return res.text().then(error => Promise.reject(error));
-                }
-            })
-            .then(json => {
-                this.completed = json.completed;
-                Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").classList.remove("text-green-500");
-                delete Page.rightContainer().querySelector(".careEventBody").querySelector(".completed").dataset.nextCareEventId;
-                
-                this.nextCareEventId = null;
-                // let nextCareEvent = CareEvent.findById(this.nextCareEventId)
-                // console.log(nextCareEvent);
-                // debugger
-                // Page.leftContainer(".body").querySelector(`[data-care-event-id='${this.nextCareEventId}']`).parentNode.remove();
-                this.render();
-            })
     }
 
     toggleActive() {
@@ -830,8 +705,6 @@ class Note {
                 let plant = Plant.findById(plantId);
                 plant.noteCollection ||= noteArray.map(attrs => new Note(attrs));
 
-                // console.log(noteArray)
-                // console.log(plant.noteCollection)
                 let renderedNotes = plant.noteCollection.map(note => note.render());
                 Page.rightContainer(".notesContainer").append(...renderedNotes);
 
@@ -877,30 +750,6 @@ class Note {
         return this.form
     }
 
-    destroy() {
-        let proceed = confirm("Are you sure you want to delete this note?");
-        if(proceed) {
-            return fetch(`http://localhost:3000/notes/${this.id}`, {
-                method: 'DELETE'
-            })
-                .then(json => {
-                    let index = Plant.active.noteCollection.findIndex(note => note.id == json.id);
-                    Plant.active.noteCollection.splice(index, 1);
-                    console.log("this is note destory's this: ", this);
-                    this.element.remove();
-                    new FlashMessage({type: 'success', message: 'Note successfully deleted'})
-                })
-        }
-    }
-
-    static removeForm() {
-        Page.rightContainer(".notesContainer").querySelector('form').remove();
-        
-        let icon = document.querySelector(".notesContainer").querySelector('.removeForm');
-        icon.classList.remove(..."fa fa-minus removeForm".split(" "));
-        icon.classList.add(..."fa fa-plus addNoteIcon".split(" "));
-    }
-
     static create(formData) {
         return fetch("http://localhost:3000/notes/", {
             method: "POST",
@@ -920,7 +769,7 @@ class Note {
             .then(noteAttributes => {
                 let note = new Note(noteAttributes);
                 let renderedNote = note.render();
-                let notesContainer = Page.rightContainer().querySelector(".notesContainer");
+                let notesContainer = Page.rightContainer(".notesContainer");
                 notesContainer.insertBefore(renderedNote, notesContainer.children[1]);
                 
                 new FlashMessage({type: 'success', message: 'New note added successfully'})
@@ -929,8 +778,31 @@ class Note {
             .catch(error => {
                 new FlashMessage({type: 'error', message: error});
             })
-        }    
+    }    
 
+    destroy() {
+        let proceed = confirm("Are you sure you want to delete this note?");
+        if(proceed) {
+            return fetch(`http://localhost:3000/notes/${this.id}`, {
+                method: 'DELETE'
+            })
+                .then(json => {
+                    let index = Plant.active.noteCollection.findIndex(note => note.id == json.id);
+                    Plant.active.noteCollection.splice(index, 1);
+                    this.element.remove();
+                    new FlashMessage({type: 'success', message: 'Note successfully deleted'})
+                })
+        }
+    }
+
+    static removeForm() {
+        Page.rightContainer(".notesContainer").querySelector('form').remove();
+        
+        let icon = document.querySelector(".notesContainer").querySelector('.removeForm');
+        icon.classList.remove(..."fa fa-minus removeForm".split(" "));
+        icon.classList.add(..."fa fa-plus addNoteIcon".split(" "));
+    }
+    
     render() {
         this.element ||= document.createElement('div');
         this.element.classList.add(..."newNote bg-white shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
@@ -943,7 +815,6 @@ class Note {
               day: 'numeric'
             }
         );
-            console.log(date)
         this.date ||= document.createElement('div');
         this.date.classList.add(..."px-4 pt-5 pb-0 col-span-full".split(" "));
         this.date.textContent = date;
@@ -989,7 +860,6 @@ class FlashMessage {
     }
 
     toggleDisplay() {
-        console.log("we got to toggle display")
         this.container().classList.toggle('opacity-0');
         this.container().classList.toggle(this.error ? 'bg-red-200' : 'bg-gray-200');
     }
