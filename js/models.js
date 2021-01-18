@@ -221,6 +221,8 @@ class Plant {
                 method: 'DELETE'
             })
                 .then(json => {
+                    let plant = Plant.findById(this.id);
+                    plant.careEvents.forEach(event => event.removeFromCollection());
                     let index = Plant.collection.findIndex(plant => plant.id == json.id);
                     Plant.collection.splice(index, 1);
                     this.element.remove();
@@ -476,6 +478,11 @@ class CareEvent {
             })    
     }
 
+    removeFromCollection() {
+        let index = CareEvent.collection.findIndex(careEvent => careEvent.id == this.id);
+        CareEvent.collection.splice(index, 1);
+    }
+
     markCompleted() {
         return fetch(`http://localhost:3000/care_events/${this.id}`, {
             method: "PATCH",
@@ -559,10 +566,12 @@ class CareEvent {
     }
 
     due() {
-        return new Date(`${this.due_date} 00:00`).toDateString() <= new Date().toDateString();
+        let d1 = new Date(`${this.due_date} 00:00`);
+        let d2 = new Date();
+        return !!(d1 <= d2);
     }
 
-    render() { 
+    render() { //Page.leftContainer
         this.element ||= document.createElement('div');
         this.element.classList.add(..."bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6".split(" "));
 
@@ -796,11 +805,15 @@ class Note {
     }
 
     static removeForm() {
-        Page.rightContainer(".notesContainer").querySelector('form').remove();
-        
-        let icon = document.querySelector(".notesContainer").querySelector('.removeForm');
-        icon.classList.remove(..."fa fa-minus removeForm".split(" "));
-        icon.classList.add(..."fa fa-plus addNoteIcon".split(" "));
+        let form = Page.rightContainer(".notesContainer").querySelector('form');
+        if (form) {
+            form.reset();
+            form.remove();
+
+            let icon = Page.rightContainer(".notesContainer").querySelector('.removeForm');
+            icon.classList.remove(..."fa fa-minus removeForm".split(" "));
+            icon.classList.add(..."fa fa-plus addNoteIcon".split(" "));
+        }
     }
     
     render() {
