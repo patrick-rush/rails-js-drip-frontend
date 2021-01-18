@@ -98,6 +98,15 @@ document.addEventListener('submit', function(e) {
             "plant_id" : Plant.active.id
         }
         CareEvent.create(formData)
+    } else if (target.matches('#search')) {
+        console.log("search")
+        // let date = target.querySelector('input').value;
+        // let formData = {
+        //     "event_type" : "Water", 
+        //     "due_date" : new Date(date), 
+        //     "plant_id" : Plant.active.id
+        // }
+        // CareEvent.create(formData)
     }
 })
 
