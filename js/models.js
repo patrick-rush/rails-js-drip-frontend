@@ -59,9 +59,9 @@ class Page {
     }
 
     static resetForm() {
-        let plantForm = Page.formContainer();
+        const plantForm = Page.formContainer();
         
-        let submit = plantForm.querySelector(".submit");
+        const submit = plantForm.querySelector(".submit");
         
         plantForm.reset();
         submit.innerText = "Save"
@@ -70,7 +70,7 @@ class Page {
 
 class Plant {
     constructor(attributes) {
-        let whitelist = ["id", "name", "species", "location", "watering_frequency", "fertalizating_frequency", "user_id", "active", "careEvents"];
+        const whitelist = ["id", "name", "species", "location", "watering_frequency", "fertalizating_frequency", "user_id", "active", "careEvents"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
         if(this.active) { Plant.active = this; }
     }
@@ -97,7 +97,7 @@ class Plant {
             .then(plantArray => {
                 this.collection ||= plantArray.map(attrs => new Plant(attrs));
                 this.collection.map(plant => {CareEvent.allByPlant(plant)})
-                let renderedPlants = this.collection.map(plant => plant.render());
+                const renderedPlants = this.collection.map(plant => plant.render());
                 Page.leftContainer(".body").innerHTML = "";
                 Page.leftContainer(".header").innerText = "Plants";
                 Page.leftContainer(".body").append(...renderedPlants);
@@ -111,11 +111,11 @@ class Plant {
     }
 
     static new() {
-        let header = Page.rightContainer(".header");
-        let title = header.querySelector(".title");
-        let body = Page.rightContainer(".body");
-        let careEventBody = Page.rightContainer('.careEventBody');
-        let plantForm = Page.formContainer();
+        const header = Page.rightContainer(".header");
+        const title = header.querySelector(".title");
+        const body = Page.rightContainer(".body");
+        const careEventBody = Page.rightContainer('.careEventBody');
+        const plantForm = Page.formContainer();
 
         title.innerText = "Create a New Plant";
         body.classList.add("hidden");
@@ -140,11 +140,11 @@ class Plant {
                 }
             })
             .then(plantAttributes => {
-                let plant = new Plant(plantAttributes);
+                const plant = new Plant(plantAttributes);
                 this.collection.push(plant);
                 plant.renderPlant();
                 Page.setFocus(".showPlants");
-                let renderedPlants = this.collection.map(plant => plant.render());
+                const renderedPlants = this.collection.map(plant => plant.render());
                 Page.leftContainer(".body").innerHTML = "";
                 Page.leftContainer(".header").innerText = "Plants";
                 Page.leftContainer(".body").append(...renderedPlants);
@@ -158,20 +158,20 @@ class Plant {
     }
 
     edit() {
-        let header = Page.rightContainer(".header");
-        let title = header.querySelector(".title");
-        let body = Page.rightContainer(".body");
-        let plantForm = Page.formContainer();
+        const header = Page.rightContainer(".header");
+        const title = header.querySelector(".title");
+        const body = Page.rightContainer(".body");
+        const plantForm = Page.formContainer();
 
         title.innerText = `Edit ${this.name}`;
         body.classList.add("hidden");
         plantForm.classList.remove("hidden");
         
-        let name = plantForm.querySelector(".name");
-        let species = plantForm.querySelector(".species");
-        let location = plantForm.querySelector(".location");
-        let submit = plantForm.querySelector(".submit");
-        let watering_frequency = plantForm.querySelector(".watering_frequency");
+        const name = plantForm.querySelector(".name");
+        const species = plantForm.querySelector(".species");
+        const location = plantForm.querySelector(".location");
+        const submit = plantForm.querySelector(".submit");
+        const watering_frequency = plantForm.querySelector(".watering_frequency");
         
         name.value = this.name;
         species.value = this.species;
@@ -183,7 +183,7 @@ class Plant {
     }
 
     update(formData) {
-        let plantForm = Page.formContainer();
+        const plantForm = Page.formContainer();
 
         return fetch(`http://localhost:3000/plants/${this.id}`, {
             method: "PUT",
@@ -215,15 +215,15 @@ class Plant {
     }
 
     destroy() {
-        let proceed = confirm("Are you sure you want to delete this plant?");
+        const proceed = confirm("Are you sure you want to delete this plant?");
         if(proceed) {
             return fetch(`http://localhost:3000/plants/${this.id}`, {
                 method: 'DELETE'
             })
                 .then(json => {
-                    let plant = Plant.findById(this.id);
+                    const plant = Plant.findById(this.id);
                     plant.careEvents.forEach(event => event.removeFromCollection());
-                    let index = Plant.collection.findIndex(plant => plant.id == json.id);
+                    const index = Plant.collection.findIndex(plant => plant.id == json.id);
                     Plant.collection.splice(index, 1);
                     this.element.remove();
                     new FlashMessage({type: 'success', message: 'Plant successfully deleted'})
@@ -234,10 +234,10 @@ class Plant {
 
     changeDays(plusOrMinus) {
         if (plusOrMinus === "+") {
-            let newWateringFrequency = this.watering_frequency + 1;
+            const newWateringFrequency = this.watering_frequency + 1;
             this.watering_frequency = newWateringFrequency;
         } else if (plusOrMinus === "-") {
-            let newWateringFrequency = this.watering_frequency - 1;
+            const newWateringFrequency = this.watering_frequency - 1;
             this.watering_frequency = newWateringFrequency;
         }
         return fetch(`http://localhost:3000/plants/${this.id}`, {
@@ -279,22 +279,22 @@ class Plant {
         if (Page.rightContainer(".addNoteIcon")) {
             Page.rightContainer(".addNoteIcon").dataset.plantId = this.id;            
         } else {
-            let icon = Page.rightContainer(".removeForm");
+            const icon = Page.rightContainer(".removeForm");
             icon.classList.remove(..."fa fa-minus removeForm".split(" "));
             icon.classList.add(..."fa fa-plus addNoteIcon".split(" "));
         }
         if (Page.rightContainer(".addCareEventIcon")) {
             Page.rightContainer(".addCareEventIcon").dataset.plantId = this.id;
         } else {
-            let icon = Page.rightContainer(".removeCareEventForm");
+            const icon = Page.rightContainer(".removeCareEventForm");
             icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
             icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
         }
         
-        let notes = Page.rightContainer().querySelectorAll(".newNote");
+        const notes = Page.rightContainer().querySelectorAll(".newNote");
         notes.forEach((note) => {note.remove()})
         Note.allByPlantId(this.id);
-        let careEvents = Page.rightContainer().querySelectorAll("newCareEvent");
+        const careEvents = Page.rightContainer().querySelectorAll("newCareEvent");
         careEvents.forEach((careEvent) => {careEvent.remove()});
         CareEvent.allByPlantId(this.id);
     }
@@ -325,7 +325,7 @@ class Plant {
 
 class CareEvent {
     constructor(attributes) {
-        let whitelist = ["id", "event_type", "due_date", "completed", "plant_id", "active", "nextCareEventId"];
+        const whitelist = ["id", "event_type", "due_date", "completed", "plant_id", "active", "nextCareEventId"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
         if(this.active) { CareEvent.active = this; }
     }
@@ -362,10 +362,10 @@ class CareEvent {
 
     static today() {
         this.collection ||= [];
-        let dueCareEvents = this.collection.filter(careEvent => {
+        const dueCareEvents = this.collection.filter(careEvent => {
             return careEvent.due();
         })
-        let renderedCareEvents = dueCareEvents.map(careEvent => careEvent.render());
+        const renderedCareEvents = dueCareEvents.map(careEvent => careEvent.render());
         Page.leftContainer(".body").innerHTML = "";
         Page.leftContainer(".header").innerText = "Today's Care Events";
         Page.leftContainer(".body").append(...renderedCareEvents);
@@ -378,7 +378,7 @@ class CareEvent {
     }
 
     static new() {
-        let icon = document.querySelector(".careEventsContainer").querySelector('.addCareEventIcon');
+        const icon = document.querySelector(".careEventsContainer").querySelector('.addCareEventIcon');
         icon.classList.remove(..."fa fa-plus addCareEventIcon".split(" "));
         icon.classList.add(..."fa fa-minus removeCareEventForm".split(" "));
 
@@ -419,7 +419,7 @@ class CareEvent {
 
         this.form.append(this.contentBox, this.buttonContainer);
 
-        let careEventsContainer = Page.rightContainer(".careEventsContainer");
+        const careEventsContainer = Page.rightContainer(".careEventsContainer");
         careEventsContainer.insertBefore(this.form, careEventsContainer.children[1]);
 
         return this.form
@@ -444,11 +444,11 @@ class CareEvent {
             })
             .then(careEventAttributes => {
                 this.collection ||= [];
-                let careEvent = new CareEvent(careEventAttributes);
+                const careEvent = new CareEvent(careEventAttributes);
                 this.collection.push(careEvent);
                 Plant.findById(careEvent.plant_id).careEvents.push(careEvent);
-                let renderedCareEvent = careEvent.renderCareEventsByPlant();
-                let careEventsContainer = Page.rightContainer('.careEventsContainer');
+                const renderedCareEvent = careEvent.renderCareEventsByPlant();
+                const careEventsContainer = Page.rightContainer('.careEventsContainer');
                 careEventsContainer.insertBefore(renderedCareEvent, careEventsContainer.children[1]);
                 
                 new FlashMessage({type: 'success', message: 'New care event added successfully'});
@@ -466,10 +466,10 @@ class CareEvent {
         })
             .then(json => {
                 CareEvent.active.element ? CareEvent.active.element.remove() : null;
-                let index = CareEvent.collection.findIndex(careEvent => careEvent.id == json.id);
+                const index = CareEvent.collection.findIndex(careEvent => careEvent.id == json.id);
                 CareEvent.collection.splice(index, 1);
-                let plant = Plant.findById(CareEvent.active.plant_id);
-                let otherIndex = plant.careEvents.findIndex(careEvent => careEvent.id == json.id);
+                const plant = Plant.findById(CareEvent.active.plant_id);
+                const otherIndex = plant.careEvents.findIndex(careEvent => careEvent.id == json.id);
                 plant.careEvents.splice(otherIndex, 1);
                 new FlashMessage({type: 'success', message: 'Care event successfully deleted'});
             })
@@ -479,7 +479,7 @@ class CareEvent {
     }
 
     removeFromCollection() {
-        let index = CareEvent.collection.findIndex(careEvent => careEvent.id == this.id);
+        const index = CareEvent.collection.findIndex(careEvent => careEvent.id == this.id);
         CareEvent.collection.splice(index, 1);
     }
 
@@ -508,7 +508,7 @@ class CareEvent {
                 return Plant.findById(this.plant_id)
             })
             .then(plant => {
-                let careEvent = CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
+                const careEvent = CareEvent.create({event_type: "Water", due_date: CareEvent.calculateDate(plant.watering_frequency), plant_id: plant.id});
                 
                 return careEvent
             })
@@ -548,26 +548,26 @@ class CareEvent {
     }
 
     static removeForm() {
-        let form = Page.rightContainer(".careEventsContainer").querySelector('form');
+        const form = Page.rightContainer(".careEventsContainer").querySelector('form');
             if (form) {
                 form.reset();
                 form.remove();
                 
-                let icon = Page.rightContainer(".careEventsContainer").querySelector('.removeCareEventForm');
+                const icon = Page.rightContainer(".careEventsContainer").querySelector('.removeCareEventForm');
                 icon.classList.remove(..."fa fa-minus removeCareEventForm".split(" "));
                 icon.classList.add(..."fa fa-plus addCareEventIcon".split(" "));
             }
     }
 
     static calculateDate(frequency) {
-        let date = new Date();
+        const date = new Date();
         date.setDate(date.getDate() + frequency);
         return date;
     }
 
     due() {
-        let d1 = new Date(`${this.due_date} 00:00`);
-        let d2 = new Date();
+        const d1 = new Date(`${this.due_date} 00:00`);
+        const d2 = new Date();
         return !!(d1 <= d2);
     }
 
@@ -584,7 +584,7 @@ class CareEvent {
             this.eventNameLink.classList.remove("line-through");
         }
 
-        let date = new Date(`${this.due_date} 00:00`).toDateString(
+        const date = new Date(`${this.due_date} 00:00`).toDateString(
             'en-us',
             {
               year: 'numeric',
@@ -606,7 +606,7 @@ class CareEvent {
         Page.formContainer().classList.add("hidden");
         Page.rightContainer(".careEventBody").classList.remove("hidden");
 
-        let plant = Plant.findById(this.plant_id);
+        const plant = Plant.findById(this.plant_id);
         Page.rightContainer(".careEventBody").querySelector(".increaseDays").dataset.plantId = plant.id;
         Page.rightContainer(".careEventBody").querySelector(".decreaseDays").dataset.plantId = plant.id;
         Page.rightContainer(".careEventBody").querySelector(".completed").dataset.careEventId = this.id;
@@ -617,7 +617,7 @@ class CareEvent {
             Page.rightContainer(".careEventBody").querySelector(".completed").classList.remove("text-green-500");            
         }
 
-        let date = new Date(`${this.due_date} 00:00`).toDateString(
+        const date = new Date(`${this.due_date} 00:00`).toDateString(
             'en-us',
             {
               year: 'numeric',
@@ -631,9 +631,9 @@ class CareEvent {
     }
 
     static allByPlantId(plantId) {
-        let plant = Plant.findById(plantId);
+        const plant = Plant.findById(plantId);
         plant.careEvents ||= [];
-        let renderedCareEvents = plant.careEvents.map(careEvent => careEvent.renderCareEventsByPlant());
+        const renderedCareEvents = plant.careEvents.map(careEvent => careEvent.renderCareEventsByPlant());
 
         Page.rightContainer(".careEventsContainer").querySelectorAll(".newCareEvent").forEach(event => event.remove());
         Page.rightContainer(".careEventsContainer").append(...renderedCareEvents);
@@ -645,7 +645,7 @@ class CareEvent {
         this.item ||= document.createElement('div');
         this.item.classList.add(..."newCareEvent bg-gray-50 shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
 
-        let date = new Date(`${this.due_date} 00:00`).toDateString(
+        const date = new Date(`${this.due_date} 00:00`).toDateString(
             'en-us',
             {
               year: 'numeric',
@@ -687,7 +687,7 @@ class CareEvent {
 
 class Note {
     constructor(attributes) {
-        let whitelist = ["id", "content", "plant_id", "created_at", "active"];
+        const whitelist = ["id", "content", "plant_id", "created_at", "active"];
         whitelist.forEach(attr => this[attr] = attributes[attr]);
         if(this.active) { Note.active = this; }
     }
@@ -711,10 +711,10 @@ class Note {
                 }
             })
             .then(noteArray => {
-                let plant = Plant.findById(plantId);
+                const plant = Plant.findById(plantId);
                 plant.noteCollection ||= noteArray.map(attrs => new Note(attrs));
 
-                let renderedNotes = plant.noteCollection.map(note => note.render());
+                const renderedNotes = plant.noteCollection.map(note => note.render());
                 Page.rightContainer(".notesContainer").append(...renderedNotes);
 
                 return plant.noteCollection;
@@ -722,7 +722,7 @@ class Note {
     }
 
     static new() {
-        let icon = document.querySelector(".notesContainer").querySelector('.addNoteIcon');
+        const icon = document.querySelector(".notesContainer").querySelector('.addNoteIcon');
         icon.classList.remove(..."fa fa-plus addNoteIcon".split(" "));
         icon.classList.add(..."fa fa-minus removeForm".split(" "));
 
@@ -753,7 +753,7 @@ class Note {
 
         this.form.append(this.contentBox, this.buttonContainer);
 
-        let notesContainer = Page.rightContainer(".notesContainer");
+        const notesContainer = Page.rightContainer(".notesContainer");
         notesContainer.insertBefore(this.form, notesContainer.children[1]);
 
         return this.form
@@ -776,9 +776,9 @@ class Note {
                 }
             })
             .then(noteAttributes => {
-                let note = new Note(noteAttributes);
-                let renderedNote = note.render();
-                let notesContainer = Page.rightContainer(".notesContainer");
+                const note = new Note(noteAttributes);
+                const renderedNote = note.render();
+                const notesContainer = Page.rightContainer(".notesContainer");
                 notesContainer.insertBefore(renderedNote, notesContainer.children[1]);
                 
                 new FlashMessage({type: 'success', message: 'New note added successfully'})
@@ -790,13 +790,13 @@ class Note {
     }    
 
     destroy() {
-        let proceed = confirm("Are you sure you want to delete this note?");
+        const proceed = confirm("Are you sure you want to delete this note?");
         if(proceed) {
             return fetch(`http://localhost:3000/notes/${this.id}`, {
                 method: 'DELETE'
             })
                 .then(json => {
-                    let index = Plant.active.noteCollection.findIndex(note => note.id == json.id);
+                    const index = Plant.active.noteCollection.findIndex(note => note.id == json.id);
                     Plant.active.noteCollection.splice(index, 1);
                     this.element.remove();
                     new FlashMessage({type: 'success', message: 'Note successfully deleted'})
@@ -805,12 +805,12 @@ class Note {
     }
 
     static removeForm() {
-        let form = Page.rightContainer(".notesContainer").querySelector('form');
+        const form = Page.rightContainer(".notesContainer").querySelector('form');
         if (form) {
             form.reset();
             form.remove();
 
-            let icon = Page.rightContainer(".notesContainer").querySelector('.removeForm');
+            const icon = Page.rightContainer(".notesContainer").querySelector('.removeForm');
             icon.classList.remove(..."fa fa-minus removeForm".split(" "));
             icon.classList.add(..."fa fa-plus addNoteIcon".split(" "));
         }
@@ -820,7 +820,7 @@ class Note {
         this.element ||= document.createElement('div');
         this.element.classList.add(..."newNote bg-white shadow overflow-hidden sm:rounded-lg mt-5".split(" "));
 
-        let date = new Date(this.created_at).toDateString(
+        const date = new Date(this.created_at).toDateString(
             'en-us',
             {
               year: 'numeric',

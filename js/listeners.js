@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function(e) {
 })
 
 document.addEventListener('click', function(e) {
-    let target = e.target;
+    const target = e.target;
     Page.hideWelcome();
 
     if (target.matches('.showPlants')) {
@@ -14,32 +14,32 @@ document.addEventListener('click', function(e) {
         Page.resetForm();
         Plant.new();
     } else if (target.matches('.selectPlant')) {
-        let plant = Plant.findById(target.dataset.plantId);
+        const plant = Plant.findById(target.dataset.plantId);
         plant.show();
     } else if (target.matches('.increaseDays')) {
-        let plant = Plant.findById(target.dataset.plantId);
+        const plant = Plant.findById(target.dataset.plantId);
         plant.changeDays("+")
     } else if (target.matches('.decreaseDays')) {
-        let plant = Plant.findById(target.dataset.plantId);
+        const plant = Plant.findById(target.dataset.plantId);
         plant.changeDays("-")
     } else if (target.matches('.showToday')) {
         Page.showWelcome();
         Page.setFocus('.showToday');
         CareEvent.today();
     } else if (target.matches('.editPlant')) {
-        let plant = Plant.findById(target.dataset.plantId);
+        const plant = Plant.findById(target.dataset.plantId);
         plant.edit();
     } else if (target.matches('.deletePlant')) {
-        let plant = Plant.findById(target.dataset.plantId);
+        const plant = Plant.findById(target.dataset.plantId);
         plant.destroy();
     } else if (target.matches('.selectEvent')) {
-        let careEvent = CareEvent.findById(target.dataset.careEventId);
+        const careEvent = CareEvent.findById(target.dataset.careEventId);
         careEvent.show();
     } else if (target.matches('.completed')) {
-        let careEvent = CareEvent.findById(target.dataset.careEventId);
+        const careEvent = CareEvent.findById(target.dataset.careEventId);
         if (careEvent.completed) {
             if (target.dataset.nextCareEventId) {
-                let nextCareEvent = CareEvent.findById(target.dataset.nextCareEventId);
+                const nextCareEvent = CareEvent.findById(target.dataset.nextCareEventId);
                 nextCareEvent.destroy();
                 careEvent.markNotCompleted();
             } else {
@@ -55,12 +55,12 @@ document.addEventListener('click', function(e) {
     } else if (target.matches('.removeCareEventForm')) {
         CareEvent.removeForm();
     } else if (target.matches('.trashNote')) {
-        let note = Note.findById(target.dataset.noteId);
+        const note = Note.findById(target.dataset.noteId);
         note.destroy(target.dataset.noteId);
     } else if (target.matches('.addCareEventIcon')) {
         CareEvent.new();
     } else if (target.matches('.deleteCareEvent')) {
-        let careEvent = CareEvent.findById(target.dataset.careEventId);
+        const careEvent = CareEvent.findById(target.dataset.careEventId);
         careEvent.destroy();
         Page.showWelcome();
 
@@ -68,31 +68,31 @@ document.addEventListener('click', function(e) {
 })
 
 document.addEventListener('submit', function(e) {
-    let target = e.target;
+    const target = e.target;
     e.preventDefault();
     if (target.matches('#newPlant')) {
-        let formData = {};
+        const formData = {};
         target.querySelectorAll('input').forEach(function(input) {
             formData[input.name] = input.value;
         })
         Plant.create(formData);
     } else if (target.matches('#updatePlant')) {
-        let formData = {};
+        const formData = {};
         target.querySelectorAll('input').forEach(function(input) {
             formData[input.name] = input.value;
         })
-        let plant = Plant.findById(target.dataset.plantId);
+        const plant = Plant.findById(target.dataset.plantId);
         plant.update(formData);
     } else if (target.matches('.newNote')) {
-        let content = target.querySelector('textarea').value;
-        let formData = {
+        const content = target.querySelector('textarea').value;
+        const formData = {
             "content" : content,
             "plant_id" : Plant.active.id
         };
         Note.create(formData);
     } else if (target.matches('.newCareEvent')) {
-        let date = target.querySelector('input').value;
-        let formData = {
+        const date = target.querySelector('input').value;
+        const formData = {
             "event_type" : "Water", 
             "due_date" : new Date(date), 
             "plant_id" : Plant.active.id
