@@ -63,7 +63,6 @@ document.addEventListener('click', function(e) {
         let careEvent = CareEvent.findById(target.dataset.careEventId);
         careEvent.destroy();
         Page.showWelcome();
-
     }
 })
 
@@ -99,7 +98,7 @@ document.addEventListener('submit', function(e) {
         }
         CareEvent.create(formData)
     } else if (target.matches('#search')) {
-        console.log("search")
+        console.log("search", target.querySelector('input').value)
         // let date = target.querySelector('input').value;
         // let formData = {
         //     "event_type" : "Water", 
