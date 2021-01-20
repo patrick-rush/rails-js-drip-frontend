@@ -79,6 +79,20 @@ class Plant {
         return this.collection.find(plant => plant.id == id);
     }
 
+    static search(searchQuery) {
+        this.collection ||= [];
+        const results = this.collection.filter(plant => {
+            return plant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            plant.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            plant.location.toLowerCase().includes(searchQuery.toLowerCase());
+        });
+        let renderedPlants = results.map(plant => plant.render());
+        Page.leftContainer(".body").innerHTML = "";
+        Page.leftContainer(".header").innerText = "Search Results";
+        Page.leftContainer(".body").append(...renderedPlants);
+        return results;
+    }
+
     static all() {
         Page.showWelcome();
         return fetch("http://localhost:3000/plants", {

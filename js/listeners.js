@@ -99,7 +99,8 @@ document.addEventListener('submit', function(e) {
         CareEvent.create(formData)
     } else if (target.matches('#search')) {
         console.log("search", target.querySelector('input').value)
-        // let date = target.querySelector('input').value;
+        let searchQuery = target.querySelector('input').value;
+        Plant.search(searchQuery);
         // let formData = {
         //     "event_type" : "Water", 
         //     "due_date" : new Date(date), 
