@@ -14,6 +14,7 @@ Fork and clone this repo then run `open index.html` to open in your browser.
 
 Future versions of this app may include the following:
 
+* More modularization
 * Multi-user interface
 * Different types of care events (fertilize, repot, etc.)
 * Ability to group plants by room or species

@@ -79,6 +79,14 @@ class Plant {
         return this.collection.find(plant => plant.id == id);
     }
 
+    // static alphabetize() {
+    //     this.collection ||= [];
+    //     const sortedPlants = this.collection.sort((a,b) => (a.name > b.name) ? 1 : -1);
+    //     return sortedPlants;
+    // }
+
+    // list.sort((a, b) => (a.color > b.color) ? 1 : -1)
+
     static all() {
         Page.showWelcome();
         return fetch("http://localhost:3000/plants", {
