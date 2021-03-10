@@ -875,7 +875,6 @@ class FlashMessage {
 
     render() {
         this.container().textContent = this.message;
-        console.log(this)
         this.toggleDisplay();
         setTimeout(() => this.toggleDisplay(), 5000); 
     }
